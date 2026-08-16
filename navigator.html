@@ -201,7 +201,10 @@ table.kv th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-tr
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- SheetJS (xlsx) 0.18.5 — vendored locally so the .xlsx export never depends on a CDN.
+     Source: https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js
+     SHA-512: r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA== -->
+<script src="vendor/xlsx.full.min.js"></script>
 </head>
 <body>
 <header class="top">
