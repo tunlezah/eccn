@@ -1,0 +1,1360 @@
+
+Content is user-generated and unverified.
+
+795
+Learn about artifacts
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ECCN Preliminary Classification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#F2F3F1;
+  --card:#FFFFFF;
+  --ink:#14181D;
+  --ink2:#4E565E;
+  --ink3:#828B93;
+  --line:#D8DCD8;
+  --line2:#EAEDEA;
+  --lock:#123E63;
+  --lock-w:#E7EDF4;
+  --ok:#14603F;
+  --ok-w:#E3EFE8;
+  --warn:#96540A;
+  --warn-w:#F8EFE0;
+  --stop:#96203C;
+  --stop-w:#F8E7EB;
+  --ui:'Archivo',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;line-height:1.15;letter-spacing:-.018em;font-weight:700}
+p{margin:0 0 .75em}
+a{color:var(--lock)}
+button{font-family:inherit}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+
+/* ---------- top bar ---------- */
+.top{background:var(--ink);color:#fff}
+.top__in{max-width:900px;margin:0 auto;padding:13px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.logo{font-weight:700;font-size:18px;letter-spacing:-.02em}
+.logo span{color:#8FB4D6}
+.top__sub{font-family:var(--mono);font-size:10.5px;color:#9AA6B0;letter-spacing:.04em}
+.top__sp{flex:1}
+.modes{display:flex;gap:2px;background:rgba(255,255,255,.09);padding:3px;border-radius:2px}
+.mode{background:none;border:0;color:#C3CBD2;font-size:13px;font-weight:500;padding:6px 13px;cursor:pointer;border-radius:2px}
+.mode:hover{color:#fff}
+.mode.on{background:#fff;color:var(--ink);font-weight:600}
+
+/* ---------- SIGNATURE: the ECCN code builder ---------- */
+.builder{background:var(--ink);padding:0 0 26px}
+.builder__in{max-width:900px;margin:0 auto;padding:0 20px}
+.slots{display:flex;gap:7px;align-items:flex-end}
+.slot{flex:0 0 auto;width:60px;text-align:center}
+.slot__box{
+  height:74px;border:2px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:700;font-size:38px;color:rgba(255,255,255,.2);
+  background:rgba(255,255,255,.03);transition:all .25s ease;
+}
+.slot.filled .slot__box{border-color:#8FB4D6;color:#fff;background:rgba(143,180,214,.12)}
+.slot.done .slot__box{border-color:#5EC08D;color:#fff;background:rgba(94,192,141,.14)}
+.slot__lab{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:#7C868F;margin-top:7px;line-height:1.25}
+.slot.filled .slot__lab,.slot.done .slot__lab{color:#B9C4CD}
+.slot--wide{width:auto;flex:1;min-width:0}
+.slot--wide .slot__box{font-size:19px;letter-spacing:.02em;padding:0 14px;justify-content:flex-start;font-weight:500;text-align:left}
+.builder__cap{color:#9AA6B0;font-size:13px;margin-top:14px}
+.builder__cap b{color:#fff;font-weight:600}
+
+/* ---------- step card ---------- */
+.stage{padding:28px 0 70px}
+.card{background:var(--card);border:1px solid var(--line);padding:30px 32px 32px;margin-bottom:16px}
+.step-n{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);margin-bottom:9px}
+.step-n b{color:var(--lock);font-weight:700}
+h1.q{font-size:30px;margin-bottom:9px}
+.why{font-size:15px;color:var(--ink2);max-width:62ch;margin-bottom:6px}
+.src{font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:.02em;margin-bottom:22px}
+.src a{color:var(--ink3)}
+.src a:hover{color:var(--lock)}
+
+/* ---------- choice tiles ---------- */
+.tiles{display:grid;gap:9px}
+.tiles--2{grid-template-columns:1fr 1fr}
+.tiles--3{grid-template-columns:repeat(3,1fr)}
+.tile{
+  text-align:left;background:#fff;border:1.5px solid var(--line);padding:14px 16px;cursor:pointer;
+  display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;transition:border-color .12s,background .12s;
+}
+.tile:hover{border-color:var(--ink3)}
+.tile.on{border-color:var(--lock);background:var(--lock-w)}
+.tile.on.tile--stop{border-color:var(--stop);background:var(--stop-w)}
+.tile.on.tile--ok{border-color:var(--ok);background:var(--ok-w)}
+.tile__k{font-family:var(--mono);font-weight:700;font-size:20px;color:var(--ink3);line-height:1.1;min-width:22px}
+.tile.on .tile__k{color:var(--lock)}
+.tile.on.tile--stop .tile__k{color:var(--stop)}
+.tile.on.tile--ok .tile__k{color:var(--ok)}
+.tile__t{font-weight:600;font-size:15px;line-height:1.3}
+.tile__d{font-size:13px;color:var(--ink2);margin-top:3px;line-height:1.4}
+.tile__eg{font-size:12px;color:var(--ink3);margin-top:4px;font-style:italic}
+.tile--sug{position:relative}
+.tile--sug::after{content:"suggested";position:absolute;top:-8px;right:10px;background:var(--ok);color:#fff;font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px}
+
+/* ---------- fields ---------- */
+.f{display:block;margin-bottom:16px}
+.f__l{font-size:12px;font-family:var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px;display:block}
+input[type=text],textarea,select{width:100%;padding:11px 13px;border:1.5px solid var(--line);background:#fff;color:var(--ink);font-family:var(--ui);font-size:15px;border-radius:0}
+input[type=text]:focus,textarea:focus,select:focus{outline:0;border-color:var(--lock)}
+textarea{resize:vertical}
+
+/* ---------- buttons ---------- */
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:26px}
+.btn{border:1.5px solid var(--ink);background:var(--ink);color:#fff;padding:11px 22px;font-size:15px;font-weight:600;cursor:pointer}
+.btn:hover{background:#000}
+.btn:disabled{opacity:.28;cursor:not-allowed}
+.btn--g{background:none;color:var(--ink);border-color:var(--line)}
+.btn--g:hover{background:none;border-color:var(--ink)}
+.btn--s{padding:7px 14px;font-size:13px}
+.link{background:none;border:0;color:var(--lock);font-size:14px;font-weight:500;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- search ---------- */
+.search{display:grid;grid-template-columns:1fr auto;gap:8px}
+.search input{font-size:17px;padding:14px 16px}
+.filters{display:flex;gap:5px;flex-wrap:wrap;margin:14px 0 4px}
+.chip{font-family:var(--mono);font-size:11.5px;padding:6px 10px;border:1.5px solid var(--line);background:#fff;cursor:pointer;color:var(--ink2)}
+.chip:hover{border-color:var(--ink3)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.hits{border:1.5px solid var(--line);background:#fff;margin-top:14px;max-height:460px;overflow-y:auto}
+.hit{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line2);padding:13px 16px;cursor:pointer}
+.hit:last-child{border-bottom:0}
+.hit:hover{background:var(--ground)}
+.hit.on{background:var(--lock-w);box-shadow:inset 3px 0 0 var(--lock)}
+.hit__1{display:flex;gap:11px;align-items:baseline;flex-wrap:wrap}
+.hit__n{font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:.02em}
+.hit__c{font-family:var(--mono);font-size:10.5px;color:var(--stop);letter-spacing:.05em}
+.hit__t{font-size:14px;color:var(--ink2);margin-top:2px;line-height:1.4}
+.empty{padding:34px 20px;text-align:center;color:var(--ink3);font-size:14px}
+mark{background:#FFE9A8;color:inherit;padding:0 1px}
+
+/* ---------- callouts ---------- */
+.note{border-left:3px solid var(--lock);background:var(--lock-w);padding:14px 17px;font-size:14px;color:var(--ink2);margin:18px 0}
+.note b{color:var(--ink)}
+.note--warn{border-color:var(--warn);background:var(--warn-w)}
+.note--stop{border-color:var(--stop);background:var(--stop-w)}
+.note--ok{border-color:var(--ok);background:var(--ok-w)}
+.note h4{font-size:14px;margin:0 0 5px;font-weight:700;color:var(--ink)}
+
+/* ---------- result ---------- */
+.res{border:2px solid var(--ink);background:#fff;margin-top:6px}
+.res__hd{padding:26px 30px;border-bottom:1px solid var(--line);text-align:center}
+.res__k{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3)}
+.res__big{font-family:var(--mono);font-weight:700;font-size:60px;letter-spacing:.06em;line-height:1.1;margin:10px 0 4px}
+.res__t{font-size:16px;color:var(--ink2);max-width:56ch;margin:0 auto}
+.res--ear99 .res__big{color:var(--ok)}
+.res--eccn .res__big{color:var(--lock)}
+.res--itar .res__big{color:var(--stop);font-size:44px}
+.res__b{padding:24px 30px 28px}
+tab,table.kv{width:100%;border-collapse:collapse;font-size:14px}
+table.kv th,table.kv td{text-align:left;padding:9px 0;border-bottom:1px solid var(--line2);vertical-align:top}
+table.kv th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);font-weight:500;width:36%;padding-right:14px}
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:3px 8px;border:1.5px solid var(--line);margin:0 5px 5px 0;background:#fff}
+.pill--c{border-color:var(--stop);color:var(--stop);background:var(--stop-w)}
+.trail{list-style:none;padding:0;margin:0}
+.trail li{padding:9px 0 9px 22px;border-bottom:1px solid var(--line2);font-size:14px;position:relative;color:var(--ink2)}
+.trail li:last-child{border-bottom:0}
+.trail li::before{content:"";position:absolute;left:3px;top:16px;width:8px;height:8px;background:var(--ok);border-radius:50%}
+.trail li b{color:var(--ink);font-weight:600}
+
+/* ---------- register ---------- */
+.reg{border:1.5px solid var(--line);background:#fff}
+.reg__r{display:grid;grid-template-columns:110px 1fr auto;gap:14px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line2);font-size:14px}
+.reg__r:last-child{border-bottom:0}
+.reg__c{font-family:var(--mono);font-weight:700;font-size:14px}
+
+.foot{border-top:1px solid var(--line);padding:26px 0 50px;font-size:13px;color:var(--ink2)}
+.foot a{color:var(--ink2)}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:24px}
+.foot h4{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);margin:0 0 8px;font-weight:500}
+.foot ul{list-style:none;padding:0;margin:0}
+.foot li{margin-bottom:5px}
+.hide{display:none!important}
+
+@media (max-width:720px){
+  .tiles--2,.tiles--3{grid-template-columns:1fr}
+  h1.q{font-size:23px}
+  .card{padding:22px 20px 24px}
+  .slot{width:44px}
+  .slot__box{height:56px;font-size:27px}
+  .slot--wide .slot__box{font-size:14px;padding:0 9px}
+  .res__big{font-size:40px}
+  .reg__r{grid-template-columns:1fr;gap:4px}
+}
+@media print{
+  .top,.builder,.row,.foot,.modes{display:none!important}
+  body{background:#fff}
+  .card,.res{border:1px solid #999}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+<header class="top">
+  <div class="top__in">
+    <div>
+      <div class="logo">ECCN <span>Preliminary Classification</span></div>
+      <div class="top__sub">ECCN classification workbench &middot; Order of Review, Supp. 4 to Pt. 774</div>
+    </div>
+    <div class="top__sp"></div>
+    <div class="modes">
+      <button class="mode on" data-mode="guide">Guided</button>
+      <button class="mode" data-mode="search">Search the CCL</button>
+      <button class="mode" data-mode="sd">&ldquo;Specially designed&rdquo;</button>
+      <button class="mode" data-mode="reg">Register</button>
+    </div>
+  </div>
+  <div class="builder"><div class="builder__in">
+    <div class="slots" id="slots"></div>
+    <div class="builder__cap" id="cap"></div>
+  </div></div>
+</header>
+
+<main class="stage"><div class="wrap" id="stage"></div></main>
+
+<footer class="foot"><div class="wrap">
+  <div class="fgrid">
+    <div>
+      <h4>How this works</h4>
+      <p>The guided path follows the six steps BIS sets out in the Commerce Control List Order of Review. It does not guess &mdash; it asks the questions the regulation asks, in the order the regulation asks them, and keeps a record of your answers.</p>
+      <p>You are the classifier. Self-classification is expressly permitted by &sect;732.3(b); the exporter of record owns the result.</p>
+    </div>
+    <div>
+      <h4>Go to the source</h4>
+      <ul>
+        <li><a href="https://www.bis.gov/regulations/ear/interactive-commerce-control-list" target="_blank" rel="noopener">BIS Interactive CCL</a></li>
+        <li><a href="https://www.ecfr.gov/current/title-15/subtitle-B/chapter-VII/subchapter-C/part-774/appendix-Supplement%20No.%201%20to%20Part%20774" target="_blank" rel="noopener">Full CCL &mdash; Supp. 1 to Pt. 774</a></li>
+        <li><a href="https://www.ecfr.gov/current/title-15/subtitle-B/chapter-VII/subchapter-C/part-774/appendix-Supplement%20No.%204%20to%20Part%20774" target="_blank" rel="noopener">Order of Review &mdash; Supp. 4</a></li>
+        <li><a href="https://www.ecfr.gov/current/title-15/subtitle-B/chapter-VII/subchapter-C/part-772/section-772.1" target="_blank" rel="noopener">Definitions &mdash; &sect;772.1</a></li>
+        <li><a href="https://www.ecfr.gov/current/title-22/chapter-I/subchapter-M/part-121" target="_blank" rel="noopener">US Munitions List &mdash; 22 CFR 121</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>When to stop and ask</h4>
+      <ul>
+        <li><a href="https://www.bis.gov/licensing/simplified-network-application-process-redesign-snap-r" target="_blank" rel="noopener">SNAP-R &mdash; request a CCATS</a></li>
+        <li><a href="https://www.pmddtc.state.gov/" target="_blank" rel="noopener">DDTC &mdash; Commodity Jurisdiction (DS-4076)</a></li>
+        <li><a href="https://www.bis.gov/about-bis/contact-us" target="_blank" rel="noopener">BIS export counselling</a></li>
+      </ul>
+      <p style="margin-top:10px">A classification is decision support, not legal advice, and not a BIS ruling. Where an item sits at the edge of two entries, get it reviewed.</p>
+    </div>
+  </div>
+</div></footer>
+<script>
+/* =====================================================================
+   CCL NAVIGATOR — STRUCTURAL DATA
+   Sources: 15 CFR 738.2 (CCL structure), Supp. 4 to Pt. 774 (Order of
+   Review), §772.1 ("specially designed", "part", "component", "end item",
+   "equipment", "material"), Supp. 2 to Pt. 774 (General Technology Note
+   and General Software Note). Current to 24 July 2026.
+   ===================================================================== */
+
+const RULEDATE = "24 Jul 2026";
+
+/* ---- The ten CCL categories, with plain-English cues --------------- */
+const CATS = [
+ {n:0,t:"Nuclear materials, facilities and equipment, and miscellaneous",
+  d:"Nuclear fuel-cycle items — and, oddly, the home of firearms, ammunition and crime-control goods.",
+  eg:"Reactor parts, uranium, centrifuge plant, rifles, ammunition, handcuffs, riot shields"},
+ {n:1,t:"Materials, chemicals, micro-organisms and toxins",
+  d:"What things are made of, plus chemical and biological agents and their precursors.",
+  eg:"Carbon fibre, superalloys, radar-absorbing material, pathogens, CWC precursor chemicals, body armour"},
+ {n:2,t:"Materials processing",
+  d:"Machines that shape, form, coat, measure or inspect — and chemical/biological plant.",
+  eg:"CNC machine tools, bearings, robots, CMMs, isostatic presses, reactors, fermenters"},
+ {n:3,t:"Electronics",
+  d:"Components and the equipment that makes and tests them.",
+  eg:"Integrated circuits, GPUs and AI chips, FPGAs, amplifiers, semiconductor fab tools, oscilloscopes"},
+ {n:4,t:"Computers",
+  d:"Computing systems as systems, plus intrusion-software tooling.",
+  eg:"Servers, clusters, AI compute assemblies, exploitation frameworks"},
+ {n:5,t:"Telecommunications and information security",
+  d:"Split in two. Part 1 is telecoms; Part 2 is cryptography and information security.",
+  eg:"Radios, transmission equipment, lawful-intercept kit — and VPNs, HSMs, crypto libraries, mass-market encryption"},
+ {n:6,t:"Sensors and lasers",
+  d:"Anything that detects, images or emits — optical, acoustic, magnetic, radar.",
+  eg:"Focal plane arrays, thermal cameras, lasers, sonar, magnetometers, radar"},
+ {n:7,t:"Navigation and avionics",
+  d:"Knowing where you are and controlling flight.",
+  eg:"Accelerometers, gyros, inertial measurement units, GNSS receivers, flight control"},
+ {n:8,t:"Marine",
+  d:"Under and on the water.",
+  eg:"Submersibles, ROVs and AUVs, marine propulsion, pressure hulls, diving equipment"},
+ {n:9,t:"Aerospace and propulsion",
+  d:"Aircraft, engines, rockets, spacecraft and drones.",
+  eg:"Gas turbine engines, launch vehicles, satellites, UAVs, rocket motors, military aircraft"}
+];
+
+/* ---- The five product groups (§738.2(b)) --------------------------- */
+const GRPS = [
+ {k:"A",t:"Systems, equipment and components",
+  d:"The thing itself, and the parts that go in it.",
+  eg:"An end item, an assembly, a component, an accessory or an attachment"},
+ {k:"B",t:"Test, inspection and production equipment",
+  d:"Machinery used to make, test or measure other items — not the items themselves.",
+  eg:"A production line, a test rig, a metrology system, tooling and dies"},
+ {k:"C",t:"Materials",
+  d:"Crude or processed matter that is not identifiable as a part, component or end item.",
+  eg:"An alloy, a fibre, a chemical, a substrate, a propellant"},
+ {k:"D",t:"Software",
+  d:"One or more programs or microprograms fixed in any tangible medium.",
+  eg:"Firmware, source code, an application, a control program"},
+ {k:"E",t:"Technology",
+  d:"Information needed to develop, produce or use a product — including operation, installation, maintenance, repair and overhaul.",
+  eg:"Drawings, specifications, process sheets, training, technical assistance"}
+];
+
+/* ---- Item type → suggested product group -------------------------- */
+const ITYPES = [
+ {k:"enditem",  t:"An end item",
+  d:"An assembled commodity ready for its intended use — only fuel or a power source is needed to operate it.",
+  eg:"A ship, an aircraft, a computer, a firearm, a milling machine", grp:"A"},
+ {k:"component",t:"A part, component, accessory or attachment",
+  d:"Something that only makes sense used in or with something else.",
+  eg:"An engine, a circuit board, a bearing, a bracket, a lens, a carrying case", grp:"A"},
+ {k:"prodequip",t:"Production, test or inspection equipment",
+  d:"A machine whose purpose is to make, measure or test other items.",
+  eg:"A CNC lathe, a wafer stepper, a coordinate measuring machine, a test chamber", grp:"B"},
+ {k:"material", t:"A material",
+  d:"Crude or processed matter not identifiable as a part, component or end item.",
+  eg:"An alloy powder, a carbon fibre tow, a chemical, a resin, a wafer substrate", grp:"C"},
+ {k:"software", t:"Software",
+  d:"Programs or microprograms in any medium, including firmware and source code.",
+  eg:"Embedded firmware, a design tool, a cryptographic library", grp:"D"},
+ {k:"tech",     t:"Technology or technical data",
+  d:"Information required for development, production or use — including manuals, training and technical assistance.",
+  eg:"A drawing package, a process specification, on-site commissioning support", grp:"E"}
+];
+
+/* ---- "Specially designed" — §772.1 catch and release --------------- */
+const SD_CATCH = [
+ {k:"a1",t:"(a)(1) — Peculiarly responsible",
+  q:"As a result of \u201cdevelopment,\u201d does the item have properties peculiarly responsible for achieving or exceeding the performance levels, characteristics or functions described in the ECCN paragraph?",
+  h:"\u201cPeculiarly responsible\u201d means a direct and proximate causal relationship that is central or special to hitting the controlled parameter. BIS\u2019s own illustration: a garage-door opener can send an electrical signal to a device containing energetic materials, but it is not \u201cspecially designed\u201d for ECCN 1A007 \u2014 its range and encoding are nowhere near what that control describes."},
+ {k:"a2",t:"(a)(2) — For use in or with a controlled item",
+  q:"Is the item a \u201cpart,\u201d \u201ccomponent,\u201d \u201caccessory,\u201d \u201cattachment\u201d or \u201csoftware\u201d for use in or with a commodity or defence article that is enumerated or otherwise described on the CCL or the USML?",
+  h:"This catches very broadly \u2014 which is exactly why the (b) releases exist. If you answer yes here, work through the releases before concluding the item is controlled."}
+];
+
+const SD_RELEASE = [
+ {k:"b1",t:"(b)(1) — Already determined otherwise",
+  q:"Has the item been identified, in a Commodity Jurisdiction determination or an interagency-cleared CCATS under \u00a7748.3(e), as falling in an ECCN paragraph that does not use \u201cspecially designed\u201d as a control parameter, or as EAR99?",
+  h:"A prior government determination on the same item settles it. Keep the CJ or CCATS reference in the file."},
+ {k:"b2",t:"(b)(2) — Ordinary hardware",
+  q:"Is the item, regardless of its form or fit, a fastener (screw, bolt, nut, nut plate, stud, insert, clip, rivet, pin), washer, spacer, insulator, grommet, bushing, spring, wire or solder?",
+  h:"This release is deliberately mechanical. If the item is on that list, it is not \u201cspecially designed\u201d \u2014 no matter what it goes into or how tightly toleranced it is."},
+ {k:"b3",t:"(b)(3) — Same form, fit and function as an uncontrolled item",
+  q:"Does the item have the same function, performance capabilities and the same or equivalent form and fit as something used in or with an item that (i) is or was in \u201cproduction\u201d \u2014 not still in development \u2014 and (ii) is either not enumerated on the CCL or USML, or is in an ECCN controlled only for anti-terrorism reasons?",
+  h:"\u2018Form\u2019 is configuration, material and material properties. \u2018Fit\u2019 is the ability to physically interface. \u2018Equivalent\u2019 means the form was modified solely for fit. Reliability or cost improvements keep an item in \u201cproduction\u201d; a change to basic performance puts it back into \u201cdevelopment.\u201d"},
+ {k:"b4",t:"(b)(4) — Developed for both controlled and uncontrolled use",
+  q:"Was the item developed with knowledge that it would be used both in or with items described in an ECCN and in or with items that are EAR99 or controlled only for anti-terrorism reasons?",
+  h:"Requires contemporaneous documentation \u2014 concept designs, marketing plans, patent declarations, contracts. Without it, this release is not available."},
+ {k:"b5",t:"(b)(5) — General purpose",
+  q:"Was the item developed as a general-purpose commodity or software, with no knowledge of use in or with any particular commodity or type of commodity?",
+  h:"\u201cType of commodity\u201d is broad \u2014 designing for aircraft generally, or for machine tools generally, is enough to lose this release. Same documentation requirement as (b)(4)."},
+ {k:"b6",t:"(b)(6) — Developed only for uncontrolled use",
+  q:"Was the item developed with knowledge that it would be used either (i) in or with AT-only-controlled items and also EAR99 items, or (ii) exclusively in or with EAR99 items?",
+  h:"Same documentation requirement as (b)(4) and (b)(5)."}
+];
+
+/* ---- General Technology / Software Notes (Supp. 2 to Pt. 774) ------ */
+const GTN = "Technology \u201crequired\u201d for the development, production or use of a controlled item stays controlled with that item, and moves to product group E of the same category. Technology in the public domain, arising from basic scientific research, or amounting to the minimum necessary for a patent application, is outside the control. \u201cRequired\u201d refers only to the portion of technology peculiarly responsible for achieving the controlled performance levels \u2014 not the whole technology package.";
+const GSN = "Product group D does not control software that is generally available to the public \u2014 sold from stock at retail without restriction and designed for installation by the user without further substantial support from the supplier \u2014 or software in the public domain. This release does not apply to software controlled by Category 5 Part 2 (information security).";
+
+/* ---- Series flags -------------------------------------------------- */
+const SERIES = {
+  six:{t:"\u201c600 series\u201d (xY6zz)",
+    d:"Military items that were once on the US Munitions List, plus items covered by the Wassenaar Munitions List. The 6 in the third position marks a munitions entry on the CCL.",
+    note:"600-series entries trump other ECCNs. If a 600-series paragraph describes your item, it is classified there even if another ECCN would also fit."},
+  x515:{t:"9x515 spacecraft entries",
+    d:"Spacecraft, related items and certain radiation-hardened microelectronics that were once controlled under USML Category XV.",
+    note:"9x515 entries trump other ECCNs on the same principle as the 600 series."},
+  y521:{t:"0Y521 temporary entries",
+    d:"Items not otherwise on the CCL that BIS controls temporarily because they give a significant military or intelligence advantage. Listed in Supp. 5 to Pt. 774.",
+    note:"Controlled RS1 with essentially no licence exception eligibility beyond GOV."}
+};
+
+/* ---- Reason-for-control shorthand --------------------------------- */
+const RFC = {
+  CB1:"Chemical & biological weapons, Col. 1", CB2:"Chemical & biological weapons, Col. 2",
+  CB3:"Chemical & biological weapons, Col. 3", NP1:"Nuclear nonproliferation, Col. 1",
+  NP2:"Nuclear nonproliferation, Col. 2", NS1:"National security, Col. 1",
+  NS2:"National security, Col. 2", MT1:"Missile technology, Col. 1",
+  RS1:"Regional stability, Col. 1", RS2:"Regional stability, Col. 2",
+  FC1:"Firearms Convention, Col. 1", CC1:"Crime control, Col. 1",
+  CC2:"Crime control, Col. 2", CC3:"Crime control, Col. 3",
+  AT1:"Anti-terrorism, Col. 1", AT2:"Anti-terrorism, Col. 2",
+  EI:"Encryption items (\u00a7742.15 \u2014 does not run through the Country Chart)",
+  UN:"United Nations embargo (\u00a7746.1(b))",
+  SI:"Significant items \u2014 gas turbine hot-section technology (\u00a7742.14)",
+  CW:"Chemical Weapons Convention (\u00a7742.18)",
+  SS:"Short supply (Part 754)"
+};
+</script>
+<script>
+/* =====================================================================
+   ECCN INDEX
+   An index into the Commerce Control List (Supp. 1 to Pt. 774): entry
+   number, heading, reasons for control, and search terms. It is an index,
+   not a reproduction — the controlling technical parameters live in the
+   CCL text itself and every entry here links out to it.
+   Format:  number | heading | reasons | search terms
+   ===================================================================== */
+
+const IDX_RAW = `
+0A001|Nuclear reactors and specially designed or prepared equipment and components|NP1,AT1|reactor vessel control rod pressure tube fuel charging nuclear
+0A501|Firearms and related commodities (non-automatic and semi-automatic)|NS1,RS1,FC1,AT1,UN|firearm pistol rifle revolver receiver frame barrel magazine gun
+0A502|Shotguns and shotgun shells|RS1,AT1,UN|shotgun shell smoothbore
+0A503|Discharge-type arms and devices for immobilising people|CC1|stun gun taser electroshock immobilise incapacitate
+0A504|Optical sighting devices for firearms|NS1,RS1,FC1,AT1|scope sight riflescope reflex holographic night vision aiming
+0A505|Ammunition and ordnance|NS1,RS1,FC1,AT1,UN|ammunition cartridge round bullet primer projectile
+0A506|Semi-automatic rifles|NS1,RS1,FC1,AT1,UN|semi automatic rifle carbine
+0A507|Semi-automatic pistols|NS1,RS1,FC1,AT1,UN|semi automatic pistol handgun
+0A508|Semi-automatic shotguns|NS1,RS1,FC1,AT1,UN|semi automatic shotgun
+0A509|Parts and components for semi-automatic shotguns (0A508)|NS1,RS1,FC1,AT1,UN|shotgun parts components
+0A521|Emerging-technology items pending permanent classification|RS1,AT1|emerging technology temporary 1758 0y521
+0A602|Guns and armament (600 series)|NS1,RS1,AT1,UN|cannon howitzer mortar gun mount artillery military
+0A606|Ground vehicles and related commodities (600 series)|NS1,RS1,AT1,UN|armoured vehicle military truck chassis tank hull
+0A614|Military training equipment (600 series)|NS1,RS1,AT1,UN|training simulator military range
+0A617|Miscellaneous military equipment and materials (600 series)|NS1,RS1,AT1,UN|military shelter body armour armor field equipment
+0A918|Bayonets|CC1|bayonet knife blade
+0A919|Foreign-made military commodities incorporating US-origin content|RS1|foreign military commodity incorporation
+0A981|Police helmets, shields and specially designed parts|CC1|riot helmet police shield public order
+0A982|Restraint devices — handcuffs, leg irons, thumbcuffs|CC1|handcuff restraint leg iron shackle prisoner
+0A983|Equipment designed for execution, or instruments of torture|CC1|torture execution
+0A987|Optical sighting devices not controlled by 0A504|CC3|sight scope optical commercial hunting
+0B001|Plant for the separation of uranium isotopes|NP1,AT1|enrichment centrifuge isotope separation plant cascade
+0B002|Systems and equipment for isotope separation plants|NP1,AT1|feed withdrawal isotope separation header
+0B004|Plant for the production or concentration of heavy water|NP1,AT1|heavy water deuterium plant exchange tower
+0B005|Plant for the fabrication of nuclear reactor fuel elements|NP1,AT1|fuel element fabrication pellet
+0B006|Plant for the reprocessing of irradiated nuclear reactor fuel|NP1,AT1|reprocessing irradiated fuel hot cell
+0B501|Test, inspection and production equipment for firearms|NS1,RS1,AT1,UN|chambering rifling boring small arms machine barrel
+0B505|Test, inspection and production equipment for ammunition|NS1,RS1,AT1,UN|ammunition loading press production belting
+0B986|Production equipment for shotguns|AT1|shotgun production equipment
+0B999|Other firearms production equipment|AT1|firearm production equipment
+0C001|Natural uranium, depleted uranium and thorium|NP1,AT1|uranium thorium natural depleted metal
+0C002|Special fissile materials|NP1,AT1|plutonium uranium 233 235 fissile
+0C003|Deuterium and heavy water compounds|NP1,AT1|deuterium heavy water
+0C004|Nuclear-grade graphite|NP1,AT1|graphite nuclear purity boron equivalent
+0C005|Ion-exchange resins and materials for uranium separation|NP1,AT1|ion exchange resin uranium
+0D001|Software for Category 0 nuclear items|NP1,AT1|nuclear software reactor
+0D501|Software for firearms and related commodities|NS1,RS1,AT1,UN|firearm software
+0D505|Software for ammunition|NS1,RS1,AT1,UN|ammunition software
+0E001|Technology for Category 0 nuclear items|NP1,AT1|nuclear technology reactor
+0E501|Technology for firearms and related commodities|NS1,RS1,AT1,UN|firearm technology drawings manufacture
+0E505|Technology for ammunition|NS1,RS1,AT1,UN|ammunition technology
+0E982|Technology for crime-control items|CC1|crime control technology police
+1A002|Composite structures and laminates|NS1,AT1|composite laminate carbon matrix organic
+1A004|Protective and detection equipment for chemical, biological and nuclear agents|NS1,RS1,AT1|gas mask respirator nbc protective suit chemical detection decontamination
+1A005|Body armour and specially designed components|NS1,AT1|body armour armor ballistic vest plate soft
+1A006|Equipment for the disposal of improvised explosive devices|NS1,RS1,AT1|eod robot ied disposal disruptor bomb
+1A007|Equipment and devices for firing charges containing energetic materials|NS1,AT1|firing set detonator initiation explosive electrical
+1A008|Charges, devices and components containing energetic materials|NS1,AT1|shaped charge cutter detonating cord flexible
+1A102|Resaturated pyrolised carbon-carbon components|MT1,AT1|carbon carbon rocket nozzle
+1A202|Composite structures in the form of tubes (nuclear)|NP1,AT1|composite tube centrifuge rotor
+1A225|Platinised catalysts for hydrogen isotope exchange|NP1,AT1|platinised catalyst hydrogen isotope
+1A226|Specialised packings for heavy water separation|NP1,AT1|packing phosphor bronze heavy water
+1A231|Tritium and tritium compounds|NP1,AT1|tritium
+1A290|Alpha-emitting radionuclides|NP1,AT1|americium polonium radium alpha emitter
+1B001|Equipment for the production of fibres, prepregs and composites|NS1,AT1|filament winding tape laying prepreg autoclave pultrusion
+1B002|Equipment for producing metal alloy powders|NS1,AT1|atomiser alloy powder rapid solidification
+1B003|Tools, dies and moulds for superplastic forming|NS1,AT1|superplastic forming diffusion bonding die titanium
+1B101|Equipment for the production of rocket propellants|MT1,AT1|propellant mixer extruder rocket batch
+1B201|Filament winding machines (nuclear)|NP1,AT1|filament winding rotor centrifuge
+1B225|Electrolytic cells for fluorine production|NP1,AT1|fluorine electrolytic cell
+1B226|Electromagnetic isotope separators|NP1,AT1|calutron electromagnetic isotope separator
+1B228|Hydrogen cryogenic distillation columns|NP1,AT1|cryogenic distillation hydrogen
+1B231|Tritium facilities, plants and equipment|NP1,AT1|tritium plant
+1B233|Lithium isotope separation facilities|NP1,AT1|lithium isotope separation amalgam
+1C001|Materials specially designed for absorbing electromagnetic radiation|NS1,AT1|radar absorbing material stealth ram signature
+1C002|Metal alloys, alloy powder and alloyed materials|NS1,AT1|superalloy aluminide titanium nickel powder intermetallic
+1C003|Magnetic metals and superconductive materials|NS1,AT1|amorphous magnetic superconductor permalloy
+1C004|Uranium titanium alloys and tungsten alloys|NS1,AT1|tungsten alloy penetrator density
+1C005|Superconductive composite conductors|NS1,AT1|superconducting conductor niobium filament
+1C007|Ceramic base materials and non-composite ceramic materials|NS1,AT1|ceramic silicon carbide matrix powder
+1C008|Non-fluorinated polymeric substances|NS2,AT1|polyimide polyarylene polymer thermoplastic
+1C009|Unprocessed fluorinated compounds|NS2,AT1|fluoroelastomer fluoropolymer copolymer
+1C010|Fibrous or filamentary materials|NS1,MT1,AT1|carbon fibre fiber aramid glass filament prepreg tow modulus
+1C011|Metals and compounds usable as energetic materials|NS1,MT1,AT1|boron zirconium metal fuel guanidine nitramine
+1C012|Plutonium and neptunium materials|NP1,AT1|plutonium neptunium
+1C101|Materials for reduced observables|MT1,AT1|signature reduction radar absorbing missile stealth
+1C107|Graphite and ceramic materials for rocket systems|MT1,AT1|graphite nozzle re-entry ceramic
+1C111|Propellants and constituent chemicals for rocket systems|MT1,AT1|propellant oxidiser ammonium perchlorate htpb binder rocket fuel
+1C116|Maraging steel for rocket systems|MT1,AT1|maraging steel
+1C117|Tungsten and molybdenum for rocket propulsion components|MT1,AT1|tungsten molybdenum nozzle particulate
+1C118|Titanium-stabilised duplex stainless steel|MT1,AT1|duplex stainless steel
+1C202|Aluminium and titanium alloys (nuclear)|NP1,AT1|aluminium titanium alloy tensile strength
+1C210|Fibrous or filamentary materials (nuclear)|NP1,AT1|carbon aramid fibre centrifuge
+1C216|Maraging steel (nuclear)|NP1,AT1|maraging steel centrifuge
+1C226|Tungsten and tungsten alloys (nuclear)|NP1,AT1|tungsten hollow cylindrical
+1C230|Beryllium metal, alloys and compounds|NP1,AT1|beryllium
+1C231|Hafnium metal, alloys and compounds|NP1,AT1|hafnium
+1C232|Helium-3|NP1,AT1|helium 3
+1C233|Lithium enriched in the lithium-6 isotope|NP1,AT1|lithium 6 enriched
+1C234|Zirconium with a hafnium content ratio|NP1,AT1|zirconium hafnium
+1C235|Tritium and tritium compounds (nuclear)|NP1,AT1|tritium compound mixture
+1C236|Alpha-emitting radionuclides (nuclear)|NP1,AT1|alpha emitting radionuclide
+1C237|Radium-226|NP1,AT1|radium 226
+1C239|High explosives and mixtures (nuclear)|NP1,AT1|hmx rdx tatb hns high explosive
+1C240|Nickel powder and porous nickel metal|NP1,AT1|nickel powder porous
+1C298|Graphite for nuclear use|NP1,AT1|graphite density purity
+1C350|Chemicals usable as precursors for toxic chemical agents|CB1,CB2,AT1,CW|precursor thiodiglycol phosphite chemical schedule cwc dimethyl
+1C351|Human and animal pathogens and toxins|CB1,AT1|pathogen virus bacteria toxin select agent biological
+1C352|Animal pathogens|CB1,AT1|animal pathogen foot and mouth
+1C353|Genetic elements and genetically modified organisms|CB1,AT1|genetic element plasmid gmo nucleic acid sequence
+1C354|Plant pathogens|CB1,AT1|plant pathogen fungus bacterium
+1C355|Chemical Weapons Convention Schedule 2 and 3 chemicals|CB2,AT1,CW|schedule 2 schedule 3 cwc chemical
+1C395|Mixtures containing chemicals controlled by 1C350|CB2,AT1|mixture precursor dilution
+1C608|Energetic materials and related commodities (600 series)|NS1,RS1,AT1,UN|explosive propellant rdx hmx energetic military
+1C990|Detonating cord and safety fuse (commercial)|AT1|detonating cord safety fuse commercial blasting
+1C991|Vaccines, immunotoxins, medical products and diagnostic kits|AT1|vaccine diagnostic kit medical immunotoxin
+1C992|Commercial charges and devices containing energetic materials|AT1|commercial explosive shaped charge blasting perforating
+1C995|Dilute mixtures containing 1C350 chemicals|AT1|dilute mixture chemical
+1D001|Software for Category 1 equipment|NS1,AT1|materials software composite
+1D003|Software for equipment for detection of chemical and biological agents|NS1,AT1|detection software agent
+1D101|Software for missile-related Category 1 items|MT1,AT1|missile materials software
+1E001|Technology for the development or production of Category 1 items|NS1,MT1,NP1,CB1,RS1,AT1|materials technology development production
+1E002|Other technology for Category 1 materials|NS1,AT1|materials technology polybenzothiazoles
+1E351|Technology for the disposal of chemicals or micro-organisms|CB2,AT1|disposal decontamination technology
+2A001|Anti-friction bearings and bearing systems|NS2,AT1|bearing ball roller tolerance abec ring
+2A101|Radial ball bearings for missile use|MT1,AT1|bearing missile tolerance
+2A225|Crucibles resistant to liquid actinide metals|NP1,AT1|crucible actinide yttria
+2A226|Valves designed for nuclear service|NP1,AT1|valve bellows nuclear nickel
+2A290|Generators and equipment for high radiation environments|NP1,AT1|radiation hardened generator television
+2A291|Equipment for nuclear power plants|NP1,AT1|nuclear plant equipment crane
+2B001|Machine tools for removing or cutting metals, ceramics or composites|NS1,AT1|machine tool cnc milling turning lathe grinding five axis contouring
+2B002|Numerically controlled optical finishing machine tools|NS2,AT1|optical polishing machine aspheric
+2B003|Machines for finishing hardened gears|NS2,AT1|gear grinding hobbing shaving finishing
+2B004|Hot isostatic presses|NS2,NP1,AT1|hot isostatic press hip chamber
+2B005|Equipment for the deposition of inorganic overlays|NS2,AT1|cvd pvd coating deposition plasma spray sputter
+2B006|Dimensional inspection or measuring systems and equipment|NS2,AT1|cmm coordinate measuring interferometer linear displacement metrology
+2B007|Robots capable of operating in specified environments|NS2,AT1|robot manipulator radiation hardened explosive atmosphere
+2B008|Assemblies for machine tools — position feedback units|NS2,AT1|linear encoder rotary feedback spindle slide
+2B009|Spin-forming and flow-forming machines|NS2,NP1,MT1,AT1|spin forming flow forming roller
+2B104|Isostatic presses for missile-related use|MT1,AT1|isostatic press missile chamber
+2B105|Chemical vapour deposition furnaces for missile-related use|MT1,AT1|cvd furnace missile densification
+2B109|Flow-forming machines for missile-related use|MT1,AT1|flow forming missile
+2B116|Vibration test systems and equipment|MT1,AT1|vibration shaker test system digital control
+2B117|Equipment for densification and pyrolysis of composites|MT1,AT1|densification pyrolysis carbon composite
+2B119|Balancing machines and indicator heads|MT1,NP1,AT1|balancing machine rotor plane
+2B120|Motion simulators and rate tables|MT1,AT1|rate table motion simulator axis
+2B121|Positioning tables|MT1,AT1|positioning table rotary
+2B122|Centrifuges for acceleration testing|MT1,AT1|centrifuge acceleration test
+2B201|Machine tools meeting nuclear positioning thresholds|NP1,AT1|machine tool nuclear positioning accuracy grinding
+2B204|Isostatic presses (nuclear)|NP1,AT1|isostatic press nuclear
+2B206|Dimensional inspection machines (nuclear)|NP1,AT1|dimensional inspection nuclear linear
+2B207|Robots for nuclear or explosive environments|NP1,AT1|robot nuclear explosive
+2B209|Flow-forming and spin-forming machines (nuclear)|NP1,AT1|flow forming mandrel nuclear
+2B225|Remote manipulators for radiochemical operations|NP1,AT1|master slave manipulator hot cell
+2B226|Controlled-atmosphere induction furnaces and power supplies|NP1,AT1|induction furnace vacuum controlled atmosphere
+2B227|Vacuum metallurgical melting and casting furnaces|NP1,AT1|vacuum melting casting furnace electron beam
+2B228|Rotor fabrication and bellows-forming equipment|NP1,AT1|rotor bellows centrifuge mandrel
+2B230|Pressure transducers for corrosive service|NP1,AT1|pressure transducer corrosion resistant absolute
+2B231|Vacuum pumps for corrosive service|NP1,AT1|vacuum pump turbomolecular
+2B232|Multistage light gas guns and high-velocity systems|NP1,AT1|light gas gun shock velocity
+2B350|Chemical manufacturing facilities and equipment|CB2,AT1,CW|reaction vessel heat exchanger pump valve corrosion hastelloy chemical plant distillation
+2B351|Toxic gas monitoring systems and detectors|CB2,AT1|toxic gas monitor detector chemical agent
+2B352|Equipment capable of handling biological materials|CB2,AT1|fermenter bioreactor centrifugal separator biosafety containment freeze dryer aerosol
+2D001|Software for Category 2 equipment|NS1,AT1|machine tool software cam
+2D002|Software for numerical control units|NS1,MT1,NP1,AT1|numerical control software contouring
+2D101|Software for missile-related Category 2 equipment|MT1,AT1|missile production software
+2D201|Software for nuclear-related Category 2 equipment|NP1,AT1|nuclear production software
+2D351|Software for toxic gas monitoring systems|CB2,AT1|gas monitoring software
+2E001|Technology for the development of Category 2 items|NS1,MT1,NP1,CB1,AT1|category 2 technology development
+2E002|Technology for the production of Category 2 items|NS1,MT1,NP1,CB1,AT1|production technology machine tool
+2E003|Other technology for Category 2 items|NS1,AT1|metalworking coating heat treatment technology
+2E301|Technology for the use of nuclear-related Category 2 equipment|NP1,AT1|nuclear use technology
+3A001|Electronic components and specially designed components|NS1,MT1,NP1,AT1|integrated circuit microprocessor fpga asic amplifier twt microwave adc radiation hardened gaas
+3A002|General purpose electronic equipment|NS2,AT1|signal generator network analyser oscilloscope spectrum analyser recorder frequency synthesiser
+3A003|Spray cooling thermal management systems|NS2,AT1|spray cooling thermal management
+3A090|Advanced computing integrated circuits|RS1,AT1|gpu ai accelerator advanced computing tpp datacentre chip performance density hbm
+3A101|Electronic equipment usable in rocket systems|MT1,AT1|missile electronics analogue digital converter
+3A201|Electronic components for nuclear use|NP1,AT1|capacitor pulse discharge high voltage nuclear magnet
+3A225|Frequency changers usable for gas centrifuge service|NP1,AT1|frequency changer inverter centrifuge
+3A226|High-power direct current power supplies|NP1,AT1|dc power supply current
+3A227|High-voltage direct current power supplies|NP1,AT1|high voltage power supply
+3A228|Switching devices and pulse discharge capacitors|NP1,AT1|krytron spark gap thyratron switching capacitor
+3A229|Firing sets and equivalent high-current pulse generators|NP1,AT1|firing set pulse generator detonator
+3A230|High-speed pulse generators|NP1,AT1|pulse generator rise time
+3A231|Neutron generator systems|NP1,AT1|neutron generator tube
+3A232|Detonators and multipoint initiation systems|NP1,AT1|detonator exploding bridgewire slapper foil
+3A233|Mass spectrometers|NP1,AT1|mass spectrometer inductively coupled ion source
+3A611|Military electronics (600 series)|NS1,RS1,AT1,UN|military electronics 600 series
+3A991|Electronic components not controlled by 3A001|AT1|microprocessor commercial electronic component
+3A992|General purpose electronic equipment not controlled by 3A002|AT1|oscilloscope general purpose test equipment recorder
+3A993|Spectrum analysers and signal generators|AT1|spectrum analyser signal generator
+3A999|Specific processing equipment|AT1|processing equipment
+3B001|Equipment for the manufacture of semiconductor devices|NS2,RS1,AT1|lithography etch deposition epitaxial euv semiconductor manufacturing sme scanner stepper cmp
+3B002|Test equipment for semiconductor devices|NS2,AT1|semiconductor test prober wafer
+3B090|Certain semiconductor manufacturing equipment|RS1,AT1|advanced semiconductor equipment advanced node
+3B611|Test and production equipment for military electronics (600 series)|NS1,RS1,AT1,UN|military electronics production
+3B991|Semiconductor manufacturing equipment not controlled by 3B001|AT1|semiconductor equipment commercial dicing
+3B992|Semiconductor test equipment not controlled by 3B002|AT1|test equipment commercial
+3C001|Hetero-epitaxial materials|NS2,AT1|epitaxial wafer gallium arsenide multilayer
+3C002|Resist materials and substrates coated with controlled resists|NS2,AT1|photoresist euv resist
+3C003|Organo-inorganic compounds for epitaxial growth|NS2,AT1|organometallic precursor mocvd
+3C004|Hydrides of phosphorus, arsenic and antimony|NS2,AT1|phosphine arsine hydride
+3C005|Silicon carbide, gallium nitride and related substrates|NS2,AT1|sic gan substrate wafer wide bandgap
+3C006|Materials with diamond or silicon carbide on a substrate|NS2,AT1|diamond substrate epitaxial
+3C992|Positive resists for semiconductor lithography|AT1|resist commercial g-line i-line
+3D001|Software for Category 3 equipment|NS2,AT1|semiconductor eda software equipment
+3D002|Software for stored-programme controlled equipment|NS2,AT1|control software electronics
+3D003|Physics-based simulation software for lithography and deposition|NS2,AT1|eda simulation lithography tcad etch
+3D101|Software for missile-related Category 3 equipment|MT1,AT1|missile electronics software
+3D991|Software for Category 3 items not elsewhere controlled|AT1|commercial electronics software
+3E001|Technology for the development or production of Category 3 items|NS2,MT1,NP1,AT1|semiconductor technology design rules process node
+3E002|Technology for the development or production of microprocessors|NS2,AT1|microprocessor technology core
+3E003|Other technology for Category 3 items|NS2,AT1|electronics technology implantation epitaxial
+3E991|Technology for Category 3 items not elsewhere controlled|AT1|commercial electronics technology
+4A003|Digital computers, electronic assemblies and related equipment|NS1,AT1|computer server cluster supercomputer adjusted peak performance app aggregate
+4A004|Computers for systolic array, neural or optical computing|NS1,AT1|neural computer systolic array optical computing
+4A005|Systems and equipment specially designed for intrusion software|NS1,AT1|intrusion software exploit implant offensive cyber
+4A090|Computers and assemblies containing 3A090-controlled circuits|RS1,AT1|ai server gpu system advanced computing assembly baseboard
+4A101|Analogue computers for rocket systems|MT1,AT1|missile computer analogue
+4A994|Computers and related equipment not controlled by 4A003|AT1|computer commercial workstation
+4D001|Software for the development or production of Category 4 equipment|NS1,AT1|computer software development
+4D003|Specific software for computers|NS1,AT1|computer software operating
+4D004|Software for the generation, command or delivery of intrusion software|NS1,AT1|intrusion software framework command control exploit
+4D090|Software for 4A090 items and .z paragraphs|RS1,AT1|advanced computing software
+4D993|Program proof and validation software|AT1|validation software
+4D994|Software for computers not controlled by 4D001|AT1|commercial computer software
+4E001|Technology for the development or production of Category 4 items|NS1,AT1|computer technology intrusion software technology
+4E091|Model weights of certain advanced closed-weight AI models|RS1,AT1|ai model weights frontier training compute
+4E992|Technology for computers not controlled by 4E001|AT1|commercial computer technology
+5A001|Telecommunications systems, equipment and components|NS1,RS1,AT1|radio transmitter telecom telecommunications wireless underwater cable jamming lawful intercept ip network surveillance
+5A101|Telemetry and telecontrol equipment usable with rockets or UAVs|MT1,AT1|telemetry telecontrol missile uav
+5A991|Telecommunications equipment not controlled by 5A001|AT1|telecom commercial router switch modem
+5B001|Test, inspection and production equipment for telecommunications|NS1,AT1|telecom test equipment
+5B991|Telecom test equipment not controlled by 5B001|AT1|telecom test commercial
+5D001|Software for telecommunications equipment|NS1,RS1,AT1|telecom software network management interception
+5D991|Telecom software not controlled by 5D001|AT1|telecom software commercial
+5E001|Technology for telecommunications equipment|NS1,RS1,AT1|telecom technology
+5E991|Telecom technology not controlled by 5E001|AT1|telecom technology commercial
+5A002|Information security systems, equipment and components using cryptography|NS1,AT1,EI|encryption cryptography vpn hsm firewall tls aes rsa security appliance key
+5A003|Systems and equipment for non-cryptographic information security|NS2,AT1|tempest emanation cable intrusion detection physical layer
+5A004|Systems for defeating, weakening or bypassing information security|NS1,AT1,EI|cryptanalytic password recovery defeat encryption quantum
+5A992|Mass market encryption commodities|AT1|mass market encryption consumer laptop phone router note 3
+5B002|Test, inspection and production equipment for information security|NS1,AT1,EI|encryption test equipment
+5D002|Information security software|NS1,AT1,EI|encryption software crypto library openssl vpn client firmware source code
+5D992|Mass market encryption software|AT1|mass market software encryption consumer application
+5E002|Technology for information security items|NS1,AT1,EI|encryption technology cryptographic design
+5E992|Mass market encryption technology|AT1|mass market encryption technology
+6A001|Acoustic systems, equipment and components|NS1,AT1|sonar hydrophone acoustic array towed transducer
+6A002|Optical sensors, detectors and focal plane arrays|NS1,RS1,AT1|focal plane array infrared detector image intensifier night vision photomultiplier
+6A003|Cameras, imaging systems and components|NS1,RS2,AT1|camera thermal imaging thermal camera high speed streak framing
+6A004|Optics, mirrors and optical components|NS2,AT1|mirror deformable optic beam director scanner
+6A005|Lasers and laser components|NS1,AT1|laser fibre diode pumped excimer co2 nd yag output power
+6A006|Magnetometers and magnetic gradiometers|NS1,AT1|magnetometer gradiometer squid sensitivity
+6A007|Gravity meters and gravity gradiometers|NS1,AT1|gravimeter gravity gradiometer
+6A008|Radar systems, equipment and assemblies|NS1,RS1,AT1|radar phased array sar isar over the horizon pulse
+6A102|Radiation-hardened detectors for missile use|MT1,AT1|radiation hardened detector missile
+6A107|Gravity meters for missile systems|MT1,AT1|gravity meter missile
+6A108|Radar and laser radar systems for missile use|MT1,AT1|radar missile tracking laser radar
+6A203|Cameras and components for nuclear use|NP1,AT1|streak camera framing nuclear
+6A205|Lasers and laser amplifiers for nuclear use|NP1,AT1|laser enrichment nuclear copper vapour
+6A225|Velocity interferometers|NP1,AT1|visar interferometer velocity
+6A226|Pressure sensors for shock measurement|NP1,AT1|manganin pressure sensor shock quartz
+6A611|Military optics and sensors (600 series)|NS1,RS1,AT1,UN|military optics sensors 600 series
+6A991|Marine and terrestrial acoustic equipment not controlled by 6A001|AT1|sonar commercial echo sounder fish finder
+6A992|Optical sensors not controlled by 6A002|AT1|optical sensor commercial
+6A993|Cameras not controlled by 6A003|AT1|commercial camera
+6A995|Lasers not controlled by 6A005|AT1|commercial laser
+6A996|Magnetometers not controlled by 6A006|AT1|magnetometer commercial
+6A998|Airborne radar, altimeters and terrain avoidance equipment|AT1|airborne radar altimeter terrain
+6B008|Pulse radar cross-section measurement systems|NS2,AT1|radar cross section measurement range
+6C004|Optical materials|NS2,AT1|zinc selenide zinc sulphide optical material
+6C005|Synthetic crystalline laser materials|NS2,AT1|laser crystal nd yag ti sapphire
+6D001|Software for Category 6 equipment|NS1,AT1|sensor laser software
+6D003|Other software for sensors and lasers|NS1,AT1|radar processing acoustic software beamforming
+6E001|Technology for the development of Category 6 items|NS1,MT1,NP1,AT1|sensor laser technology development
+6E002|Technology for the production of Category 6 items|NS1,MT1,NP1,AT1|sensor laser production technology
+6E003|Other technology for Category 6 items|NS1,AT1|optics coating polishing technology
+7A001|Accelerometers|NS1,MT1,AT1|accelerometer bias scale factor threshold
+7A002|Gyros and angular rate sensors|NS1,MT1,AT1|gyro gyroscope angular rate fog rlg drift
+7A003|Inertial measurement equipment and navigation systems|NS1,MT1,AT1|imu inertial navigation ins ahrs
+7A004|Star trackers and their components|NS1,MT1,AT1|star tracker attitude azimuth
+7A005|Global navigation satellite system receiving equipment|NS1,MT1,AT1|gps gnss receiver anti jam military code decryption
+7A006|Airborne altimeters|NS1,MT1,AT1|radar altimeter airborne
+7A008|Underwater sonar navigation systems|NS1,AT1|doppler sonar navigation underwater correlation
+7A101|Accelerometers usable in rocket systems|MT1,AT1|accelerometer missile
+7A102|Gyros usable in rocket systems|MT1,AT1|gyro missile drift
+7A103|Instrumentation, navigation equipment and systems for missiles|MT1,AT1|missile guidance navigation integrated flight
+7A104|Gyro-astro compasses|MT1,AT1|astro compass azimuth
+7A105|GNSS receiving equipment designed for airborne use|MT1,AT1|gnss receiver missile uav altitude velocity
+7A106|Altimeters for missile use|MT1,AT1|altimeter missile radar laser
+7A115|Passive sensors for determining bearings|MT1,AT1|passive sensor bearing emitter
+7A116|Flight control systems and servo valves|MT1,AT1|flight control servo valve actuator missile
+7A117|Guidance sets|MT1,AT1|guidance set circular error probable
+7A611|Military avionics (600 series)|NS1,RS1,AT1,UN|military avionics 600 series
+7A994|Other navigation, direction-finding and airborne equipment|AT1|navigation commercial avionics compass
+7B001|Test, calibration and alignment equipment for Category 7 items|NS1,AT1|inertial test equipment calibration
+7B003|Equipment for the production of Category 7 items|NS1,AT1|gyro production equipment
+7D002|Source code for the operation of inertial navigation equipment|NS1,AT1|inertial source code kalman
+7D003|Other software for navigation and avionics|NS1,MT1,AT1|navigation software flight control gnss
+7D004|Source code for flight control and avionics|NS1,AT1|flight control source code
+7E004|Technology for the development of navigation and avionics equipment|NS1,MT1,AT1|avionics technology inertial design
+7E994|Technology for Category 7 items not elsewhere controlled|AT1|avionics technology commercial
+8A001|Submersible vehicles and surface vessels|NS1,AT1|submersible rov auv submarine underwater vehicle manned
+8A002|Marine systems, equipment and components|NS1,AT1|marine propulsion underwater sensor pressure hull thruster connector
+8A609|Submersible vessels and oceanographic equipment (600 series)|NS1,RS1,AT1,UN|military submersible 600 series
+8A620|Surface vessels and related commodities (600 series)|NS1,RS1,AT1,UN|naval vessel military ship warship
+8A992|Vessels, marine systems and equipment not elsewhere controlled|AT1|commercial marine equipment diving rebreather
+8B001|Test, inspection and production equipment for marine items|NS1,AT1|marine test equipment water tunnel
+8C001|Syntactic foam for underwater use|NS1,AT1|syntactic foam buoyancy
+8D001|Software for marine systems|NS1,AT1|marine software
+8D002|Source code for marine equipment|NS1,AT1|marine source code
+8E001|Technology for the development or production of marine items|NS1,AT1|marine technology
+8E002|Other technology for marine items|NS1,AT1|marine technology hull
+9A001|Aero gas turbine engines incorporating controlled technologies|NS1,AT1,SI|turbofan turbojet aero engine gas turbine
+9A002|Marine gas turbine engines|NS1,AT1|marine gas turbine
+9A003|Specially designed assemblies for gas turbine engines|NS1,AT1,SI|turbine blade combustor hot section disc
+9A004|Space launch vehicles and spacecraft|NS1,MT1,RS1,AT1|launch vehicle spacecraft satellite bus payload
+9A005|Liquid rocket propulsion systems|MT1,AT1|liquid rocket engine propulsion
+9A006|Systems and components for liquid rocket propellants|MT1,AT1|cryogenic tank propellant system turbopump
+9A007|Solid rocket propulsion systems|MT1,AT1|solid rocket motor
+9A008|Components for solid rocket propulsion systems|MT1,AT1|nozzle case rocket motor thrust vector
+9A009|Hybrid rocket propulsion systems|MT1,AT1|hybrid rocket
+9A010|Specially designed components for launch vehicles|MT1,AT1|launch vehicle structure separation
+9A011|Ramjet, scramjet and pulse jet engines|MT1,AT1|ramjet scramjet pulse jet combined cycle
+9A012|Unmanned aerial vehicles and related equipment|NS1,MT1,RS1,AT1|uav drone unmanned aircraft rpas endurance payload autonomous
+9A101|Turbojet and turbofan engines usable in rockets or UAVs|MT1,AT1|turbojet uav missile engine thrust
+9A104|Sounding rockets|MT1,AT1|sounding rocket
+9A105|Liquid propellant rocket engines|MT1,AT1|liquid rocket engine impulse
+9A106|Systems and components for rocket propulsion|MT1,AT1|rocket subsystem ablative liner
+9A107|Solid propellant rocket engines|MT1,AT1|solid rocket engine total impulse
+9A108|Components for rocket propulsion systems|MT1,AT1|rocket motor case nozzle stage
+9A109|Sounding rocket systems|MT1,AT1|sounding rocket system payload
+9A110|Composite structures usable in rocket systems|MT1,AT1|composite structure rocket laminate
+9A111|Pulse jet engines usable in rocket systems|MT1,AT1|pulse jet
+9A115|Launch support equipment|MT1,AT1|launcher transporter erector gantry
+9A116|Re-entry vehicles and related equipment|MT1,AT1|re-entry vehicle heat shield
+9A117|Staging mechanisms and interstages|MT1,AT1|staging mechanism separation interstage
+9A118|Devices to regulate combustion in rocket engines|MT1,AT1|thrust vector control combustion regulation
+9A119|Individual rocket stages|MT1,AT1|rocket stage
+9A120|Lighter-than-air vehicles usable in rocket systems|MT1,AT1|balloon airship
+9A515|Spacecraft and related commodities|NS1,RS1,RS2,AT1|satellite spacecraft remote sensing star tracker radiation hardened microelectronic
+9A610|Military aircraft and related commodities (600 series)|NS1,RS1,AT1,UN|military aircraft airframe 600 series
+9A619|Military gas turbine engines (600 series)|NS1,RS1,AT1,UN|military engine 600 series
+9A991|Civil aircraft and gas turbine engines not elsewhere controlled|AT1|civil aircraft commercial engine parts spares helicopter rotorcraft
+9B001|Equipment for the production of gas turbine blades and vanes|NS1,AT1,SI|directional solidification single crystal casting blade
+9B002|Online control systems for gas turbine engines|NS1,AT1|engine control test online
+9B003|Equipment for gas turbine combustor production|NS1,AT1|combustor production
+9B004|Tooling and fixtures for gas turbine blade manufacture|NS1,AT1|blade tooling fixture
+9B006|Acoustic vibration test equipment|NS1,AT1|acoustic vibration test
+9B009|Tooling for powder metallurgy rotor components|NS1,AT1|powder metallurgy rotor tooling
+9B106|Environmental chambers and anechoic chambers|MT1,AT1|environmental chamber anechoic thermal
+9B115|Production equipment for rocket systems|MT1,AT1|rocket production equipment
+9B116|Production facilities for rocket systems|MT1,AT1|rocket production facility
+9C110|Resin-impregnated fibre prepregs for rocket systems|MT1,AT1|prepreg rocket preform
+9D001|Software for the development of aerospace propulsion|NS1,AT1|aerospace software engine design
+9D002|Software for the production of Category 9 items|NS1,AT1|aerospace production software
+9D003|Software for full-authority digital engine control|NS1,AT1|fadec engine control software
+9D004|Other software for Category 9 items|NS1,AT1|aerospace software blade cooling
+9D101|Software for missile-related Category 9 items|MT1,AT1|rocket software
+9D515|Software for spacecraft and related items|NS1,RS1,AT1|spacecraft software
+9E001|Technology for the development of Category 9 items|NS1,MT1,AT1|aerospace development technology
+9E002|Technology for the production of Category 9 items|NS1,MT1,AT1|aerospace production technology
+9E003|Technology for gas turbine engines and aerospace items|NS1,MT1,AT1,SI|hot section technology turbine blade cooling directional
+9E101|Technology for missile-related Category 9 items|MT1,AT1|rocket technology
+9E515|Technology for spacecraft and related items|NS1,RS1,AT1|spacecraft technology
+`;
+
+const IDX = [];
+/* Query-side synonym expansion: normalises spelling variants and common
+   jargon so a search matches the index's terminology either way. */
+const SYNONYMS = [
+  [/\bfiber\b/g,"fibre"], [/\barmor\b/g,"armour"], [/\bbulletproof\b/g,"ballistic body armour"], [/\bcolor\b/g,"colour"],
+  [/\bwi-?fi\b/g,"wireless telecommunications radio"],
+  [/\bmalware\b/g,"intrusion software exploit"], [/\bai chip\b/g,"gpu accelerator"],
+  [/\bthermal camera\b/g,"thermal imaging"], [/\bnight-vision\b/g,"night vision"],
+  [/\bautonomous underwater\b/g,"auv"], [/\bunmanned underwater\b/g,"auv"],
+  [/\bhelicopter\b/g,"aircraft rotorcraft"], [/\b5g\b/g,"telecommunications"],
+  [/\b5-axis\b/g,"five axis"], [/\b5 axis\b/g,"five axis"],
+  [/\bencrypted\b/g,"encryption"], [/\bmissile\b/g,"rocket"],
+  [/\bchip\b/g,"integrated circuit"], [/\bdrone\b/g,"uav unmanned"]
+];
+function normQ(s){
+  const base = s.toLowerCase().trim();
+  const variants = [base];
+  SYNONYMS.forEach(([re,rep])=>{
+    if(re.test(base)) variants.push(base.replace(re, rep).replace(/\s+/g," ").trim());
+  });
+  return variants;
+}
+function matchesQ(entryQ, variants){
+  return variants.some(v=>{
+    const words = v.split(/\s+/).filter(Boolean);
+    return words.length && words.every(w=>entryQ.includes(w));
+  });
+}
+IDX_RAW.trim().split("\n").forEach(line=>{
+  const p = line.split("|");
+  if(p.length < 4) return;
+  const n = p[0].trim();
+  const e = {
+    n:n,
+    t:p[1].trim(),
+    c:p[2].split(",").map(s=>s.trim()).filter(Boolean),
+    k:p[3].trim(),
+    cat:parseInt(n[0],10),
+    grp:n[1],
+    six:/^\d[A-E]6\d\d$/.test(n),
+    x515:/^9[A-E]515$/.test(n),
+    y521:/^0[A-E]521$/.test(n)
+  };
+  e.q = (e.n + " " + e.t + " " + e.k).toLowerCase();
+  e.url = "https://www.ecfr.gov/search?search%5Bquery%5D=" + encodeURIComponent(e.n) + "&search%5Bhierarchy%5D%5Btitle%5D=15";
+  IDX.push(e);
+});
+
+/* Entries whose control text turns on "specially designed" or that are
+   otherwise worth a second look. Drives the prompt in step 5. */
+const SD_FLAG = /^(0A50[0-9]|0A6|0B50|0D50|0E50|1A00[2-8]|1C10|1C6|2B00|3A61|3B61|6A61|7A61|8A6|9A00[38]|9A51|9A61|9B00|9E003)/;
+</script>
+<script>
+/* =====================================================================
+   CCL NAVIGATOR — APPLICATION
+   ===================================================================== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const hl=(text,q)=>{
+  if(!q) return esc(text);
+  const re = new RegExp("("+q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","ig");
+  return esc(text).replace(re,"<mark>$1</mark>");
+};
+
+let mode = "guide";
+let g;               /* guided-wizard state */
+let gstep = 0;
+let sQ="", sCat=null, sGrp=null;
+let sdCatch={a1:null,a2:null}, sdRelease={}, sdStep=0;
+let REG = [];         /* saved classification register (session only) */
+
+function freshG(){
+  return {
+    itemDesc:"", usml:null, dsList:null,
+    cat:null, grp:null,
+    six:null, x515:null,
+    picked:null,          /* chosen ECCN entry */
+    sdNeeded:null, sdResult:null,
+    result:null           /* 'ear99' | 'eccn' | 'itar' */
+  };
+}
+
+/* ---------------- ECCN slots (the signature builder) ---------------- */
+function renderSlots(){
+  const labels = ["CAT","GRP","","","",""];
+  const eccn = (mode==="guide" && g && g.picked) ? g.picked.n :
+               (mode==="guide" && g && g.result==="ear99") ? "EAR99" : null;
+  let chars = eccn ? eccn.split("") : [g&&g.cat!=null?String(g.cat):"", g&&g.grp?g.grp:"","","",""];
+  if(eccn==="EAR99"){
+    $("#slots").innerHTML = '<div class="slot--wide slot done"><div class="slot__box">EAR99 — not listed on the Commerce Control List</div></div>';
+    $("#cap").innerHTML = capText();
+    return;
+  }
+  const done = !!(g && g.picked);
+  let html = "";
+  for(let i=0;i<5;i++){
+    const has = chars[i] && chars[i]!=="";
+    html += '<div class="slot '+(has?(done?"done":"filled"):"")+'"><div class="slot__box">'+(has?esc(chars[i]):"&middot;")+'</div>'+
+      '<div class="slot__lab">'+["Category","Group","Sub","Sub","Sub"][i]+'</div></div>';
+  }
+  $("#slots").innerHTML = html;
+  $("#cap").innerHTML = capText();
+}
+function capText(){
+  if(mode!=="guide" || !g) return "Work through the Commerce Control List Order of Review, one question at a time.";
+  if(g.result==="itar") return 'Item appears to be a <b>defense article</b> — outside BIS jurisdiction.';
+  if(g.result==="ear99") return 'Not described anywhere on the CCL &rarr; <b>EAR99</b>.';
+  if(g.picked) return 'Classified under <b>'+g.picked.n+'</b> — '+esc(g.picked.t);
+  if(g.cat!=null && g.grp) return 'Narrowed to Category '+g.cat+', Group '+g.grp+' — still working out the entry.';
+  if(g.cat!=null) return 'Narrowed to Category '+g.cat+' — '+CATS[g.cat].t+'.';
+  return 'Start by describing the item.';
+}
+
+/* ==================== GUIDED WIZARD ==================== */
+const GSTEPS = [
+  "Item","USML check","Category","Group","600-series check","Specially designed","Entry","Result"
+];
+function nav(back,next,label,dis){
+  let h = '<div class="row">';
+  if(back!=null) h += '<button class="btn btn--g" data-gback="'+back+'">Back</button>';
+  if(next!=null) h += '<button class="btn" data-gnext="'+next+'" '+(dis?"disabled":"")+'>'+(label||"Continue")+'</button>';
+  h += '</div>';
+  return h;
+}
+function tile(field,val,items,cols){
+  cols = cols||2;
+  return '<div class="tiles tiles--'+cols+'">' + items.map(o=>{
+    const on = val===o.v;
+    return '<button class="tile '+(on?"on "+(o.m?"tile--"+o.m:""):"")+(o.sug?" tile--sug":"")+'" data-gset="'+field+'" data-gval="'+o.v+'">'+
+      (o.k!=null?'<span class="tile__k">'+o.k+'</span>':'')+
+      '<span><span class="tile__t">'+o.t+'</span>'+
+      (o.d?'<span class="tile__d">'+o.d+'</span>':'')+
+      (o.eg?'<span class="tile__eg">e.g. '+o.eg+'</span>':'')+
+      '</span></button>';
+  }).join("") + '</div>';
+}
+
+function viewG(){
+  let out = '<div class="card">';
+  out += '<div class="step-n">Guided classification &middot; step <b>'+(gstep+1)+'</b> of 8 &middot; '+GSTEPS[gstep]+'</div>';
+
+  /* ---- 0: item ---- */
+  if(gstep===0){
+    out += '<h1 class="q">What are you classifying?</h1>'+
+    '<p class="why">A plain description is enough to start — the Order of Review works from what the item is and does, not from a code you already have in mind.</p>'+
+    '<label class="f"><span class="f__l">Item description</span><textarea rows="3" id="gdesc" placeholder="e.g. A benchtop CNC 5-axis milling machine used for prototyping aluminium parts">'+esc(g.itemDesc)+'</textarea></label>'+
+    nav(null,1,"Begin",false)+'</div>';
+    return out;
+  }
+
+  /* ---- 1: USML gate ---- */
+  if(gstep===1){
+    out += '<h1 class="q">Is it a defense article?</h1>'+
+    '<p class="why">The CCL Order of Review starts here: if the item is described on the US Munitions List — including one of its catch-all "specially designed" paragraphs — it is subject to the ITAR, not the EAR, and the CCL is never reached.</p>'+
+    '<div class="src">Supp. 4 to Pt. 774, para. (a) &middot; <a href="https://www.ecfr.gov/current/title-22/chapter-I/subchapter-M/part-121" target="_blank" rel="noopener">USML — 22 CFR 121</a></div>'+
+    tile("usml",g.usml,[
+      {v:"no",t:"No — this is a commercial or dual-use item",d:"Not described on the USML in any of its 21 categories.",k:"→"},
+      {v:"unsure",t:"Not sure",d:"Screen it against the USML categories before proceeding — a wrong turn here is the costliest mistake in classification.",k:"?",m:"warn"},
+      {v:"yes",t:"Yes — it's on the US Munitions List",d:"Stop here. Route to DDTC.",k:"⨯",m:"stop"}
+    ],1);
+    if(g.usml==="unsure"){
+      out += '<div class="note note--warn"><h4>Check before proceeding</h4><p>The USML (22 CFR 121) has 21 categories covering weapons, ordnance, vessels, aircraft, spacecraft, electronics, and more. If, after checking, the item is not described there, come back and select &ldquo;No.&rdquo; If it is, select &ldquo;Yes&rdquo; and stop.</p></div>';
+    }
+    out += nav(0,2,g.usml==="yes"?"See result":"Continue",g.usml==null) + '</div>';
+    return out;
+  }
+
+  /* ---- 2: category ---- */
+  if(gstep===2){
+    const q = (g.itemDesc||"").toLowerCase();
+    out += '<h1 class="q">Which CCL category?</h1>'+
+    '<p class="why">The CCL is divided into ten categories by general subject matter. Pick the one that best matches the item\u2019s general characteristics — you will narrow further from here.</p>'+
+    '<div class="src">Supp. 4 to Pt. 774, Step 1 &middot; &sect;738.2(a)</div>'+
+    '<div class="tiles tiles--2">' + CATS.map(c=>{
+      const on = g.cat===c.n;
+      return '<button class="tile '+(on?"on":"")+'" data-gset="cat" data-gval="'+c.n+'">'+
+        '<span class="tile__k">'+c.n+'</span>'+
+        '<span><span class="tile__t">'+esc(c.t)+'</span>'+
+        '<span class="tile__d">'+esc(c.d)+'</span>'+
+        '<span class="tile__eg">e.g. '+esc(c.eg)+'</span></span></button>';
+    }).join("") + '</div>'+
+    nav(1,3,"Continue",g.cat==null)+'</div>';
+    return out;
+  }
+
+  /* ---- 3: group ---- */
+  if(gstep===3){
+    out += '<h1 class="q">What kind of item is it, within Category '+g.cat+'?</h1>'+
+    '<p class="why">Each category has the same five product groups. This tells you which letter follows the category number.</p>'+
+    '<div class="src">Supp. 4 to Pt. 774, Step 2 &middot; &sect;772.1 definitions of "part," "component," "end item," "material"</div>'+
+    tile("grp",g.grp, ITYPES.map(i=>({v:i.grp,t:i.t,d:i.d,eg:i.eg,k:i.grp})),1)+
+    nav(2,4,"Continue",!g.grp)+'</div>';
+    return out;
+  }
+
+  /* ---- 4: 600-series / 9x515 gate ---- */
+  if(gstep===4){
+    out += '<h1 class="q">Does a munitions-derived entry apply first?</h1>'+
+    '<p class="why">Before working through ordinary ECCNs, the Order of Review requires you to check the "600 series" and 9x515 spacecraft entries. If either describes the item, that entry trumps every other ECCN — you stop here.</p>'+
+    '<div class="src">Supp. 4 to Pt. 774, Steps 3–4</div>';
+
+    out += '<div class="note"><h4>'+SERIES.six.t+'</h4><p>'+SERIES.six.d+' '+SERIES.six.note+'</p></div>'+
+           '<div class="note"><h4>'+SERIES.x515.t+'</h4><p>'+SERIES.x515.d+' '+SERIES.x515.note+'</p></div>';
+
+    out += '<div class="f"><span class="f__l">Does a 600-series or 9x515 entry describe this item?</span>'+
+      tile("six",g.six,[
+        {v:"no",t:"No — proceed to the ordinary ECCNs",k:"→"},
+        {v:"yes",t:"Yes — classify there and stop",d:"Search the "+String(g.cat)+"-series entries directly (they carry a 6 or are 9x515).",k:"⨯",m:"warn"}
+      ],1)+'</div>';
+
+    out += nav(3,5,"Continue",!g.six)+'</div>';
+    return out;
+  }
+
+  /* ---- 5: specially designed pre-check ---- */
+  if(gstep===5){
+    out += '<h1 class="q">Does the entry you\u2019re considering use \u201cspecially designed\u201d?</h1>'+
+    '<p class="why">Many CCL paragraphs — especially catch-all "parts and components" paragraphs and the 600 series — gate on this defined term. If the entry you\u2019re about to check uses it, work through the catch-and-release test before relying on the entry.</p>'+
+    '<div class="src">Supp. 4 to Pt. 774, Step 4.a–4.b &middot; &sect;772.1</div>'+
+    tile("sdNeeded",g.sdNeeded,[
+      {v:"no",t:"No — the paragraph I\u2019m considering lists specific technical parameters",d:"e.g. a threshold, a material, a performance figure — no \u201cspecially designed\u201d language.",k:"→"},
+      {v:"yes",t:"Yes — the paragraph controls items \u201cspecially designed\u201d for something",d:"Run the catch-and-release test now.",k:"?",m:"warn"}
+    ],1)+'</div>';
+    if(g.sdNeeded==="yes"){
+      out += '<div class="note note--warn"><h4>Use the dedicated tool</h4><p>Switch to the <b>&ldquo;Specially designed&rdquo;</b> mode above to work through &sect;772.1(a) and (b) step by step, then come back here with the answer.</p>'+
+        '<button class="btn btn--s btn--g" data-jump="sd" style="margin-top:8px">Open the specially designed tool</button></div>';
+    }
+    out += nav(4,6,"Continue",g.sdNeeded==null)+'</div>';
+    return out;
+  }
+
+  /* ---- 6: entry search within cat/group ---- */
+  if(gstep===6){
+    out += '<h1 class="q">Find the entry</h1>'+
+    '<p class="why">Starting from the beginning of Category '+g.cat+', Group '+g.grp+', check each entry against the item until one describes it. This index is a navigational aid — confirm the final choice against the live CCL text.</p>'+
+    '<div class="src">Supp. 4 to Pt. 774, Step 5 &middot; <a href="'+"https://www.ecfr.gov/current/title-15/subtitle-B/chapter-VII/subchapter-C/part-774/appendix-Supplement%20No.%201%20to%20Part%20774"+'" target="_blank" rel="noopener">full CCL text</a></div>';
+
+    const qraw = sQ.trim().toLowerCase(); const qv = normQ(qraw); const q = qraw;
+    let cands = IDX.filter(e=>e.cat===g.cat && e.grp===g.grp);
+    if(q) cands = cands.filter(e=>matchesQ(e.q, qv));
+    out += '<div class="search"><input type="text" id="gq" value="'+esc(sQ)+'" placeholder="Filter within Category '+g.cat+g.grp+' — keyword, e.g. laser, valve, bearing…"><button class="btn btn--g btn--s" id="gqclear">Clear</button></div>';
+    out += '<div class="hits">' + (cands.length ? cands.map(e=>{
+      const on = g.picked && g.picked.n===e.n;
+      return '<button class="hit '+(on?"on":"")+'" data-pick="'+e.n+'"><span class="hit__1"><span class="hit__n">'+hl(e.n,q)+'</span>'+
+        '<span class="hit__c">'+e.c.slice(0,4).join(" &middot; ")+(e.c.length>4?" …":"")+'</span></span>'+
+        '<span class="hit__t">'+hl(e.t,q)+'</span></button>';
+    }).join("") : '<div class="empty">No entry in this index matches yet. Try a different keyword, or if you\u2019ve genuinely worked the full category and nothing fits, the item is likely <b>EAR99</b> — say so on the next step.</div>') + '</div>';
+
+    out += '<div class="note">Not finding it? This index covers commonly encountered entries as a shortcut, not the complete CCL. <a href="https://www.bis.gov/regulations/ear/interactive-commerce-control-list" target="_blank" rel="noopener">BIS\u2019s own Interactive CCL</a> is the complete, authoritative search.</div>';
+
+    if(g.picked){
+      const e = g.picked;
+      out += '<div class="note note--ok"><h4>'+e.n+' — '+esc(e.t)+'</h4>'+
+        '<p>Reasons for control on this entry: '+e.c.map(c=>'<span class="pill pill--c">'+(RFC[c]||c)+'</span>').join(" ")+'</p>'+
+        (e.six?'<p><b>600-series entry.</b> '+SERIES.six.note+'</p>':'')+
+        (e.x515?'<p><b>9x515 entry.</b> '+SERIES.x515.note+'</p>':'')+
+        '<p style="margin-top:8px"><a href="'+e.url+'" target="_blank" rel="noopener">Open the full entry on eCFR &rarr;</a> — confirm every paragraph, note and decontrol before relying on this.</p></div>';
+    }
+    out += nav(5,7,"This is the entry — continue",!g.picked) +
+      '<div class="row" style="margin-top:0"><button class="link" data-gset="notfound" data-gval="1">None of these describe it — conclude EAR99</button></div>'+
+    '</div>';
+    return out;
+  }
+
+  /* ---- 7: result ---- */
+  if(gstep===7){
+    out += viewResult();
+    return out;
+  }
+  return out;
+}
+
+function viewResult(){
+  let out = "";
+  const isEar99 = !g.picked;
+  if(isEar99){
+    out += '<div class="res res--ear99"><div class="res__hd"><div class="res__k">Result</div><div class="res__big">EAR99</div>'+
+      '<div class="res__t">No entry on the Commerce Control List describes this item.</div></div>'+
+      '<div class="res__b">'+
+      '<div class="note note--warn"><h4>EAR99 is a conclusion, not a default</h4><p>It only follows from having worked the category through and found nothing that fits — Step 6 of the Order of Review. It removes the Country Chart from a licensing analysis, but licences can still be required by destination (comprehensive embargoes), by party (Entity List, Denied Persons List, SDN), and by end use (Part 744) under the general prohibitions.</p></div>'+
+      '<table class="kv">'+
+        '<tr><th>Item</th><td>'+esc(g.itemDesc||"—")+'</td></tr>'+
+        '<tr><th>USML check</th><td>Not a defense article (Step in Supp. 4, para. (a))</td></tr>'+
+        '<tr><th>Category reviewed</th><td>'+g.cat+' — '+esc(CATS[g.cat].t)+'</td></tr>'+
+        '<tr><th>Group reviewed</th><td>'+g.grp+' — '+esc((GRPS.find(x=>x.k===g.grp)||{}).t||"")+'</td></tr>'+
+        '<tr><th>600-series / 9x515</th><td>Checked — not applicable</td></tr>'+
+      '</table></div></div>';
+  } else {
+    const e = g.picked;
+    out += '<div class="res res--eccn"><div class="res__hd"><div class="res__k">Result</div><div class="res__big">'+e.n+'</div>'+
+      '<div class="res__t">'+esc(e.t)+'</div></div>'+
+      '<div class="res__b">'+
+      '<table class="kv">'+
+        '<tr><th>Item</th><td>'+esc(g.itemDesc||"—")+'</td></tr>'+
+        '<tr><th>Reasons for control</th><td>'+e.c.map(c=>'<span class="pill pill--c">'+(RFC[c]||c)+'</span>').join(" ")+'</td></tr>'+
+        '<tr><th>Series</th><td>'+(e.six?"600 series — trumps other ECCNs":e.x515?"9x515 spacecraft — trumps other ECCNs":"Standard entry")+'</td></tr>'+
+        '<tr><th>Specially designed</th><td>'+(g.sdNeeded==="yes"?"Reviewed under §772.1(a)/(b) — see the Specially Designed tool for the working":"Not a control parameter on this entry")+'</td></tr>'+
+        '<tr><th>Source</th><td><a href="'+e.url+'" target="_blank" rel="noopener">'+e.url+'</a></td></tr>'+
+      '</table>'+
+      '<div class="note"><b>This is a classification, not a licence determination.</b> The reasons for control above feed into the Commerce Country Chart (Supp. 1 to Pt. 738) together with your destination to tell you whether a licence is required. That is a separate exercise from classification itself.</div>'+
+      '</div></div>';
+  }
+  out += '<div class="row">'+
+    '<button class="btn btn--g" data-gback="'+(g.picked||g.itemDesc?6:0)+'">Back</button>'+
+    '<button class="btn" id="gSave">Save to register</button>'+
+    '<button class="btn btn--g" id="gDownload">Download (.xlsx)</button>'+
+    '<button class="btn btn--g" id="gNew">Classify another item</button>'+
+  '</div>';
+  return out;
+}
+
+/* ---------------- Excel export of the classification result --------- */
+function slug(s){ return String(s||"").replace(/[^a-z0-9]+/gi,"-").replace(/^-+|-+$/g,""); }
+function fmtDate(d){
+  const p=n=>String(n).padStart(2,"0");
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes());
+}
+function downloadResultXLSX(btn){
+  if(typeof XLSX==="undefined"){
+    alert("The Excel export library did not load — check your internet connection and try again.");
+    return;
+  }
+  const isEar99 = !g.picked;
+  const now = new Date();
+  const rows = [
+    ["ECCN Preliminary Classification — Result"],
+    ["Generated", fmtDate(now)],
+    ["Rule set current to", RULEDATE],
+    [],
+    ["Field", "Value"],
+    ["Item description", g.itemDesc || ""],
+    ["USML / ITAR check", "Not described on the US Munitions List"],
+    ["CCL category reviewed", g.cat!=null ? g.cat + " — " + CATS[g.cat].t : ""],
+    ["Product group reviewed", g.grp ? g.grp + " — " + ((GRPS.find(x=>x.k===g.grp)||{}).t||"") : ""],
+    ["600-series / 9x515 check", g.six==="yes" ? "Applicable — classified there" : "Checked — not applicable"],
+    ["\u201cSpecially designed\u201d reviewed", g.sdNeeded==="yes" ? "Yes — see the Specially Designed tool for the (a)/(b) working" : "Not a control parameter on this entry"],
+    [],
+    ["RESULT", isEar99 ? "EAR99" : g.picked.n],
+    ["Entry heading", isEar99 ? "No entry on the Commerce Control List describes this item" : g.picked.t],
+    ["Reasons for control", isEar99 ? "n/a — EAR99" : g.picked.c.map(c=>RFC[c]||c).join("; ")],
+    ["Series", isEar99 ? "n/a" : (g.picked.six ? "600 series — trumps other ECCNs" : g.picked.x515 ? "9x515 spacecraft — trumps other ECCNs" : "Standard entry")],
+    ["Source reference", isEar99 ? "" : g.picked.url],
+    [],
+    ["Note", isEar99
+      ? "EAR99 removes the Country Chart from a licensing analysis, but a licence can still be required by destination, party, or end use under Part 744 and Part 746."
+      : "The reasons for control above feed into the Commerce Country Chart (Supp. 1 to Pt. 738) together with the destination to determine whether a licence is required. That is a separate exercise from classification."],
+    ["Disclaimer", "This is decision support, not a BIS ruling, not legal advice, and not a substitute for a CCATS (SNAP-R) where the item sits at the edge of two entries."]
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws["!cols"] = [{wch:26},{wch:80}];
+  ws["!merges"] = [{s:{r:0,c:0},e:{r:0,c:1}}];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Classification");
+
+  const code = isEar99 ? "EAR99" : g.picked.n;
+  const fname = "ECCN-" + code + (g.itemDesc ? "-" + slug(g.itemDesc).slice(0,40) : "") + ".xlsx";
+  XLSX.writeFile(wb, fname);
+
+  if(btn){ const orig=btn.textContent; btn.textContent="Downloaded"; setTimeout(()=>{btn.textContent=orig;},1600); }
+}
+
+/* ==================== SEARCH MODE ==================== */
+function viewSearch(){
+  let out = '<div class="card">'+
+    '<div class="step-n">Search the Commerce Control List</div>'+
+    '<h1 class="q">Find an entry directly</h1>'+
+    '<p class="why">For when you already have a rough idea what you\u2019re looking for. Search across all ten categories, or narrow to one first.</p>'+
+    '<div class="src">Index of Supp. 1 to Pt. 774 — confirm every result against the live text before relying on it.</div>'+
+    '<div class="search"><input type="text" id="sq" value="'+esc(sQ)+'" placeholder="Keyword, ECCN number, or plain description — laser, encryption, machine tool, gpu, valve, drone…"><button class="btn btn--g btn--s" id="sqclear">Clear</button></div>'+
+    '<div class="filters">' + [0,1,2,3,4,5,6,7,8,9].map(i=>
+      '<button class="chip '+(sCat===i?"on":"")+'" data-scat="'+i+'">Cat '+i+'</button>').join("") +
+      '<button class="chip '+(sCat==null?"on":"")+'" data-scat="all">All categories</button></div>';
+
+  let res = IDX;
+  if(sCat!=null) res = res.filter(e=>e.cat===sCat);
+  const qraw = sQ.trim().toLowerCase(); const qv = normQ(qraw); const q = qraw;
+  if(q) res = res.filter(e=>matchesQ(e.q, qv));
+  else if(sCat==null) res = [];
+
+  out += '<div class="hits">' + (res.length ? res.slice(0,120).map(e=>
+    '<button class="hit" data-spick="'+e.n+'"><span class="hit__1"><span class="hit__n">'+hl(e.n,q)+'</span>'+
+    '<span class="hit__c">'+e.c.slice(0,5).join(" &middot; ")+'</span></span>'+
+    '<span class="hit__t">'+hl(e.t,q)+'</span></button>'
+  ).join("") : '<div class="empty">'+(q||sCat!=null?"Nothing in this index matches. Try a broader term, or check the full CCL directly.":"Search by keyword or choose a category.")+'</div>') + '</div>';
+
+  if(sPicked){
+    const e = IDX.find(x=>x.n===sPicked);
+    if(e){
+      out += '<div class="note note--ok"><h4>'+e.n+' — '+esc(e.t)+'</h4>'+
+        '<p>Reasons for control: '+e.c.map(c=>'<span class="pill pill--c">'+(RFC[c]||c)+'</span>').join(" ")+'</p>'+
+        (e.six?'<p><b>600-series entry</b> — trumps other ECCNs.</p>':'')+
+        (e.x515?'<p><b>9x515 spacecraft entry</b> — trumps other ECCNs.</p>':'')+
+        (SD_FLAG.test(e.n)?'<p><b>Likely uses \u201cspecially designed.\u201d</b> Switch to that tool if the item is a part, component, accessory or attachment.</p>':'')+
+        '<p style="margin-top:8px"><a href="'+e.url+'" target="_blank" rel="noopener">Open the full entry on eCFR &rarr;</a></p>'+
+        '<div class="row" style="margin-top:14px"><button class="btn btn--s" id="sSave">Save to register</button></div></div>';
+    }
+  }
+  out += '</div>';
+  return out;
+}
+let sPicked = null;
+
+/* ==================== SPECIALLY DESIGNED TOOL ==================== */
+function viewSD(){
+  let out = '<div class="card">'+
+    '<div class="step-n">&sect;772.1 &middot; Catch and release</div>'+
+    '<h1 class="q">Is this item &ldquo;specially designed&rdquo;?</h1>'+
+    '<p class="why">A two-part sequential test. First, does the item get caught by paragraph (a)? If yes, does any release in paragraph (b) apply? An item that is caught and not released is &ldquo;specially designed.&rdquo; An item that is caught and released is not.</p>'+
+    '<div class="src">15 CFR 772.1, definition of &ldquo;specially designed&rdquo; &middot; Supp. 4 to Pt. 774, Steps 4.a&ndash;4.b</div>';
+
+  out += '<h2 style="font-size:18px;margin:22px 0 4px">Part 1 — Catch (paragraph (a))</h2>'+
+    '<p class="why" style="margin-bottom:14px">You need only one of these to be true.</p>';
+  SD_CATCH.forEach(c=>{
+    out += '<div class="f"><span class="f__l">'+c.t+'</span>'+
+    tile("sdc_"+c.k, sdCatch[c.k], [
+      {v:"yes",t:"Yes",k:"Y"},
+      {v:"no",t:"No",k:"N"}
+    ],2) +
+    '<div class="note" style="margin-top:8px">'+c.q+'<br><span style="color:var(--ink3);font-size:12.5px">'+c.h+'</span></div></div>';
+  });
+
+  const caught = sdCatch.a1==="yes" || sdCatch.a2==="yes";
+  const bothAnswered = sdCatch.a1!=null && sdCatch.a2!=null;
+
+  if(bothAnswered && !caught){
+    out += '<div class="note note--ok"><h4>Not caught — not &ldquo;specially designed&rdquo;</h4><p>Neither (a)(1) nor (a)(2) applies. The analysis ends here; there is no need to review the releases in paragraph (b).</p></div>';
+  }
+
+  if(caught){
+    out += '<h2 style="font-size:18px;margin:26px 0 4px">Part 2 — Release (paragraph (b))</h2>'+
+    '<p class="why" style="margin-bottom:14px">Caught items escape control if <b>any</b> release applies. Work down the list — (b)(2) is the fastest to check.</p>';
+    SD_RELEASE.forEach(r=>{
+      out += '<div class="f"><span class="f__l">'+r.t+'</span>'+
+      tile("sdr_"+r.k, sdRelease[r.k], [
+        {v:"yes",t:"Yes — this release applies",k:"Y",m:"ok"},
+        {v:"no",t:"No",k:"N"}
+      ],2) +
+      '<div class="note" style="margin-top:8px">'+r.q+'<br><span style="color:var(--ink3);font-size:12.5px">'+r.h+'</span></div></div>';
+    });
+
+    const released = SD_RELEASE.some(r=>sdRelease[r.k]==="yes");
+    const allAnswered = SD_RELEASE.every(r=>sdRelease[r.k]!=null);
+
+    if(released){
+      const which = SD_RELEASE.find(r=>sdRelease[r.k]==="yes");
+      out += '<div class="res res--ear99" style="margin-top:20px"><div class="res__hd"><div class="res__k">Conclusion</div>'+
+        '<div class="res__big" style="font-size:32px">NOT SPECIALLY DESIGNED</div>'+
+        '<div class="res__t">Released under '+which.t+'.</div></div></div>';
+    } else if(allAnswered){
+      out += '<div class="res res--itar" style="margin-top:20px"><div class="res__hd"><div class="res__k">Conclusion</div>'+
+        '<div class="res__big" style="font-size:32px;color:var(--stop)">SPECIALLY DESIGNED</div>'+
+        '<div class="res__t">Caught under paragraph (a) and not released by any of (b)(1)&ndash;(b)(6). The item falls within the ECCN paragraph that uses this control parameter.</div></div></div>';
+    }
+  }
+  out += '<div class="row"><button class="btn btn--g" id="sdReset">Clear this test</button></div>';
+  out += '</div>';
+  return out;
+}
+
+/* ==================== REGISTER ==================== */
+function viewReg(){
+  let out = '<div class="card">'+
+    '<div class="step-n">Session register</div>'+
+    '<h1 class="q">Saved classifications</h1>'+
+    '<p class="why">Kept for this session only — nothing is sent anywhere. Export as JSON before you close the tab if you want to keep it, or print each record for the compliance file.</p>';
+  if(!REG.length){
+    out += '<div class="empty" style="border:1.5px solid var(--line);background:#fff">Nothing saved yet. Classify an item in Guided mode, or pick one in Search mode, then choose &ldquo;Save to register.&rdquo;</div>';
+  } else {
+    out += '<div class="reg">' + REG.map((r,i)=>
+      '<div class="reg__r"><span class="reg__c">'+esc(r.code)+'</span>'+
+      '<span>'+esc(r.desc||r.title||"—")+'<br><span style="color:var(--ink3);font-size:12px">'+new Date(r.when).toLocaleString()+'</span></span>'+
+      '<button class="link" data-regdel="'+i+'">Remove</button></div>'
+    ).join("") + '</div>';
+    out += '<div class="row"><button class="btn btn--g" id="regExport">Export register as JSON</button><button class="btn btn--g" id="regClear">Clear all</button></div>';
+  }
+  out += '</div>';
+  return out;
+}
+
+/* ==================== RENDER / EVENTS ==================== */
+function render(){
+  if(mode==="guide") $("#stage").innerHTML = viewG();
+  else if(mode==="search") $("#stage").innerHTML = viewSearch();
+  else if(mode==="sd") $("#stage").innerHTML = viewSD();
+  else if(mode==="reg") $("#stage").innerHTML = viewReg();
+  document.querySelectorAll(".mode").forEach(b=>b.classList.toggle("on", b.dataset.mode===mode));
+  renderSlots();
+  const q = $("#gq")||$("#sq");
+  if(q){ const p=q.value.length; q.focus(); q.setSelectionRange(p,p); }
+}
+
+document.addEventListener("click", e=>{
+  const t = e.target.closest("[data-mode],[data-gset],[data-gnext],[data-gback],[data-pick],[data-scat],[data-spick],[data-jump],#gqclear,#sqclear,#gSave,#sSave,#gDownload,#gNew,#sdReset,[data-regdel],#regExport,#regClear");
+  if(!t) return;
+
+  if(t.dataset.mode){ mode=t.dataset.mode; if(mode==="guide"&&!g){g=freshG();gstep=0;} render(); return; }
+  if(t.dataset.jump){ mode=t.dataset.jump; render(); return; }
+
+  if(t.dataset.gset){
+    const f=t.dataset.gset; let v=t.dataset.gval;
+    if(f==="cat") v = +v;   /* IDX category codes are numbers, not strings */
+    if(f==="notfound"){ g.picked=null; gstep=7; render(); window.scrollTo({top:0,behavior:"smooth"}); return; }
+    g[f] = g[f]===v ? null : v;
+    if(f==="cat"){ g.grp=null; g.picked=null; sQ=""; }
+    if(f==="grp"){ g.picked=null; sQ=""; }
+    if(f==="usml" && v==="yes"){ g.result="itar"; }
+    render(); return;
+  }
+  if(t.dataset.gnext!=null){
+    if(gstep===1 && g.usml==="yes"){
+      /* show ITAR stop inline instead of advancing */
+      $("#stage").innerHTML = '<div class="card"><div class="res res--itar"><div class="res__hd"><div class="res__k">Result</div>'+
+        '<div class="res__big">ITAR</div><div class="res__t">This item is described on the US Munitions List and is a defense article. BIS has no jurisdiction — the CCL is never reached.</div></div>'+
+        '<div class="res__b"><p>Registration under 22 CFR 122 and a DDTC export authorisation are the operative requirements. If jurisdiction is genuinely unclear, file a Commodity Jurisdiction request on form DS-4076 rather than self-determining.</p>'+
+        '<p><a href="https://www.pmddtc.state.gov/" target="_blank" rel="noopener">Directorate of Defense Trade Controls &rarr;</a></p></div></div>'+
+        '<div class="row"><button class="btn btn--g" data-gback="1">Back</button><button class="btn btn--g" id="gNew">Start over</button></div></div>';
+      renderSlots();
+      return;
+    }
+    gstep = +t.dataset.gnext; render(); window.scrollTo({top:0,behavior:"smooth"}); return;
+  }
+  if(t.dataset.gback!=null){ gstep = +t.dataset.gback; render(); window.scrollTo({top:0,behavior:"smooth"}); return; }
+
+  if(t.dataset.pick){
+    const e = IDX.find(x=>x.n===t.dataset.pick);
+    g.picked = g.picked && g.picked.n===e.n ? null : e;
+    render(); return;
+  }
+  if(t.dataset.scat!=null){ sCat = t.dataset.scat==="all"?null:+t.dataset.scat; render(); return; }
+  if(t.dataset.spick){ sPicked = sPicked===t.dataset.spick ? null : t.dataset.spick; render(); return; }
+
+  if(t.id==="gqclear" || t.id==="sqclear"){ sQ=""; render(); return; }
+  if(t.id==="gSave" || t.id==="sSave"){
+    let rec;
+    if(t.id==="gSave"){
+      rec = g.picked ? {code:g.picked.n, title:g.picked.t, desc:g.itemDesc, when:Date.now()}
+                      : {code:"EAR99", title:"", desc:g.itemDesc, when:Date.now()};
+    } else {
+      const e = IDX.find(x=>x.n===sPicked);
+      rec = {code:e.n, title:e.t, desc:"", when:Date.now()};
+    }
+    REG.unshift(rec);
+    t.textContent = "Saved";
+    setTimeout(()=>{ t.textContent = t.id==="gSave"?"Save to register":"Save to register"; },1600);
+    return;
+  }
+  if(t.id==="gDownload"){ downloadResultXLSX(t); return; }
+  if(t.id==="gNew"){ g=freshG(); gstep=0; sQ=""; mode="guide"; render(); window.scrollTo({top:0}); return; }
+  if(t.id==="sdReset"){ sdCatch={a1:null,a2:null}; sdRelease={}; render(); return; }
+  if(t.dataset.regdel!=null){ REG.splice(+t.dataset.regdel,1); render(); return; }
+  if(t.id==="regExport"){
+    const blob = JSON.stringify(REG,null,2);
+    navigator.clipboard.writeText(blob).then(()=>{t.textContent="Copied to clipboard";setTimeout(()=>t.textContent="Export register as JSON",1800);});
+    return;
+  }
+  if(t.id==="regClear"){ if(confirm("Clear the whole register?")){ REG=[]; render(); } return; }
+
+  /* specially-designed tiles use data-gset too, but scoped keys sdc_/sdr_ */
+});
+
+document.addEventListener("click", e=>{
+  const t = e.target.closest("[data-gset]");
+  if(!t) return;
+  const f = t.dataset.gset;
+  if(f.startsWith("sdc_")){
+    const k=f.slice(4); sdCatch[k] = sdCatch[k]===t.dataset.gval?null:t.dataset.gval; render();
+  } else if(f.startsWith("sdr_")){
+    const k=f.slice(4); sdRelease[k] = sdRelease[k]===t.dataset.gval?null:t.dataset.gval; render();
+  }
+});
+
+document.addEventListener("input", e=>{
+  const t=e.target;
+  if(t.id==="gdesc"){ g.itemDesc=t.value; renderSlots(); return; }
+  if(t.id==="gq" || t.id==="sq"){ sQ=t.value; const pos=t.selectionStart; render(); const q2=$("#"+t.id); if(q2){q2.setSelectionRange(pos,pos);} }
+});
+
+/* boot */
+g = freshG();
+render();
+</script>
+</body>
+</html>
