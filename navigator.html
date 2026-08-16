@@ -1,24 +1,18 @@
-
-Content is user-generated and unverified.
-
-795
-Learn about artifacts
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'">
 <title>ECCN Preliminary Classification</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- No remote fonts: the UI uses the system font fallback stacks defined in :root (--ui / --mono). -->
 <style>
 :root{
   --ground:#F2F3F1;
   --card:#FFFFFF;
   --ink:#14181D;
   --ink2:#4E565E;
-  --ink3:#828B93;
+  --ink3:#6B747C;
   --line:#D8DCD8;
   --line2:#EAEDEA;
   --lock:#123E63;
@@ -102,8 +96,6 @@ h1.q{font-size:30px;margin-bottom:9px}
 .tile__t{font-weight:600;font-size:15px;line-height:1.3}
 .tile__d{font-size:13px;color:var(--ink2);margin-top:3px;line-height:1.4}
 .tile__eg{font-size:12px;color:var(--ink3);margin-top:4px;font-style:italic}
-.tile--sug{position:relative}
-.tile--sug::after{content:"suggested";position:absolute;top:-8px;right:10px;background:var(--ok);color:#fff;font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px}
 
 /* ---------- fields ---------- */
 .f{display:block;margin-bottom:16px}
@@ -159,7 +151,7 @@ mark{background:#FFE9A8;color:inherit;padding:0 1px}
 .res--eccn .res__big{color:var(--lock)}
 .res--itar .res__big{color:var(--stop);font-size:44px}
 .res__b{padding:24px 30px 28px}
-tab,table.kv{width:100%;border-collapse:collapse;font-size:14px}
+table.kv{width:100%;border-collapse:collapse;font-size:14px}
 table.kv th,table.kv td{text-align:left;padding:9px 0;border-bottom:1px solid var(--line2);vertical-align:top}
 table.kv th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);font-weight:500;width:36%;padding-right:14px}
 .pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:3px 8px;border:1.5px solid var(--line);margin:0 5px 5px 0;background:#fff}
@@ -201,10 +193,7 @@ table.kv th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-tr
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
-<!-- SheetJS (xlsx) 0.18.5 — vendored locally so the .xlsx export never depends on a CDN.
-     Source: https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js
-     SHA-512: r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA== -->
-<script src="vendor/xlsx.full.min.js"></script>
+<!-- .xlsx export is built in-page by a small self-contained writer (buildXlsx, below) — no external library. -->
 </head>
 <body>
 <header class="top">
@@ -214,20 +203,20 @@ table.kv th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-tr
       <div class="top__sub">ECCN classification workbench &middot; Order of Review, Supp. 4 to Pt. 774</div>
     </div>
     <div class="top__sp"></div>
-    <div class="modes">
-      <button class="mode on" data-mode="guide">Guided</button>
-      <button class="mode" data-mode="search">Search the CCL</button>
-      <button class="mode" data-mode="sd">&ldquo;Specially designed&rdquo;</button>
-      <button class="mode" data-mode="reg">Register</button>
+    <div class="modes" role="tablist" aria-label="Tool mode">
+      <button class="mode on" data-mode="guide" role="tab" aria-selected="true">Guided</button>
+      <button class="mode" data-mode="search" role="tab" aria-selected="false">Search the CCL</button>
+      <button class="mode" data-mode="sd" role="tab" aria-selected="false">&ldquo;Specially designed&rdquo;</button>
+      <button class="mode" data-mode="reg" role="tab" aria-selected="false">Register</button>
     </div>
   </div>
   <div class="builder"><div class="builder__in">
     <div class="slots" id="slots"></div>
-    <div class="builder__cap" id="cap"></div>
+    <div class="builder__cap" id="cap" role="status" aria-live="polite"></div>
   </div></div>
 </header>
 
-<main class="stage"><div class="wrap" id="stage"></div></main>
+<main class="stage"><div class="wrap" id="stage" role="tabpanel"><noscript><div class="card"><h1 class="q">JavaScript required</h1><p class="why">This classification workbench runs entirely in your browser and needs JavaScript enabled. Nothing you enter is sent anywhere.</p></div></noscript></div></main>
 
 <footer class="foot"><div class="wrap">
   <div class="fgrid">
@@ -429,16 +418,17 @@ const IDX_RAW = `
 0A507|Semi-automatic pistols|NS1,RS1,FC1,AT1,UN|semi automatic pistol handgun
 0A508|Semi-automatic shotguns|NS1,RS1,FC1,AT1,UN|semi automatic shotgun
 0A509|Parts and components for semi-automatic shotguns (0A508)|NS1,RS1,FC1,AT1,UN|shotgun parts components
-0A521|Emerging-technology items pending permanent classification|RS1,AT1|emerging technology temporary 1758 0y521
+0A521|Items under temporary control (0Y521 series, Supp. 5 to Pt. 774)|RS1,AT1|temporary control 0y521 significant military intelligence advantage
 0A602|Guns and armament (600 series)|NS1,RS1,AT1,UN|cannon howitzer mortar gun mount artillery military
 0A606|Ground vehicles and related commodities (600 series)|NS1,RS1,AT1,UN|armoured vehicle military truck chassis tank hull
 0A614|Military training equipment (600 series)|NS1,RS1,AT1,UN|training simulator military range
 0A617|Miscellaneous military equipment and materials (600 series)|NS1,RS1,AT1,UN|military shelter body armour armor field equipment
-0A918|Bayonets|CC1|bayonet knife blade
+0A918|Bayonets|RS1,AT1,UN|bayonet knife blade
 0A919|Foreign-made military commodities incorporating US-origin content|RS1|foreign military commodity incorporation
-0A981|Police helmets, shields and specially designed parts|CC1|riot helmet police shield public order
+0A979|Police helmets and shields, and specially designed components|SS|police helmet riot shield public order protective
+0A981|Equipment designed for the execution of human beings|CC1|execution capital punishment lethal
 0A982|Restraint devices — handcuffs, leg irons, thumbcuffs|CC1|handcuff restraint leg iron shackle prisoner
-0A983|Equipment designed for execution, or instruments of torture|CC1|torture execution
+0A983|Specially designed implements of torture (thumbscrews, thumbcuffs, spiked batons)|CC1|torture thumbscrew thumbcuff spiked baton
 0A987|Optical sighting devices not controlled by 0A504|CC3|sight scope optical commercial hunting
 0B001|Plant for the separation of uranium isotopes|NP1,AT1|enrichment centrifuge isotope separation plant cascade
 0B002|Systems and equipment for isotope separation plants|NP1,AT1|feed withdrawal isotope separation header
@@ -471,8 +461,8 @@ const IDX_RAW = `
 1A202|Composite structures in the form of tubes (nuclear)|NP1,AT1|composite tube centrifuge rotor
 1A225|Platinised catalysts for hydrogen isotope exchange|NP1,AT1|platinised catalyst hydrogen isotope
 1A226|Specialised packings for heavy water separation|NP1,AT1|packing phosphor bronze heavy water
-1A231|Tritium and tritium compounds|NP1,AT1|tritium
-1A290|Alpha-emitting radionuclides|NP1,AT1|americium polonium radium alpha emitter
+1A231|Targets for the production of tritium|NP1,AT1|tritium target lithium 6 irradiation production
+1A290|Depleted uranium|NP1,AT1|depleted uranium shielding
 1B001|Equipment for the production of fibres, prepregs and composites|NS1,AT1|filament winding tape laying prepreg autoclave pultrusion
 1B002|Equipment for producing metal alloy powders|NS1,AT1|atomiser alloy powder rapid solidification
 1B003|Tools, dies and moulds for superplastic forming|NS1,AT1|superplastic forming diffusion bonding die titanium
@@ -601,9 +591,8 @@ const IDX_RAW = `
 3A992|General purpose electronic equipment not controlled by 3A002|AT1|oscilloscope general purpose test equipment recorder
 3A993|Spectrum analysers and signal generators|AT1|spectrum analyser signal generator
 3A999|Specific processing equipment|AT1|processing equipment
-3B001|Equipment for the manufacture of semiconductor devices|NS2,RS1,AT1|lithography etch deposition epitaxial euv semiconductor manufacturing sme scanner stepper cmp
+3B001|Equipment for the manufacture of semiconductor devices|NS2,RS1,AT1|lithography etch deposition epitaxial euv semiconductor manufacturing sme scanner stepper cmp advanced node 3b090
 3B002|Test equipment for semiconductor devices|NS2,AT1|semiconductor test prober wafer
-3B090|Certain semiconductor manufacturing equipment|RS1,AT1|advanced semiconductor equipment advanced node
 3B611|Test and production equipment for military electronics (600 series)|NS1,RS1,AT1,UN|military electronics production
 3B991|Semiconductor manufacturing equipment not controlled by 3B001|AT1|semiconductor equipment commercial dicing
 3B992|Semiconductor test equipment not controlled by 3B002|AT1|test equipment commercial
@@ -619,7 +608,7 @@ const IDX_RAW = `
 3D003|Physics-based simulation software for lithography and deposition|NS2,AT1|eda simulation lithography tcad etch
 3D101|Software for missile-related Category 3 equipment|MT1,AT1|missile electronics software
 3D991|Software for Category 3 items not elsewhere controlled|AT1|commercial electronics software
-3E001|Technology for the development or production of Category 3 items|NS2,MT1,NP1,AT1|semiconductor technology design rules process node
+3E001|Technology for the development or production of Category 3 items|NS2,MT1,NP1,RS1,AT1|semiconductor technology design rules process node advanced computing 3a090
 3E002|Technology for the development or production of microprocessors|NS2,AT1|microprocessor technology core
 3E003|Other technology for Category 3 items|NS2,AT1|electronics technology implantation epitaxial
 3E991|Technology for Category 3 items not elsewhere controlled|AT1|commercial electronics technology
@@ -635,7 +624,7 @@ const IDX_RAW = `
 4D090|Software for 4A090 items and .z paragraphs|RS1,AT1|advanced computing software
 4D993|Program proof and validation software|AT1|validation software
 4D994|Software for computers not controlled by 4D001|AT1|commercial computer software
-4E001|Technology for the development or production of Category 4 items|NS1,AT1|computer technology intrusion software technology
+4E001|Technology for the development or production of Category 4 items|NS1,RS1,AT1|computer technology intrusion software technology advanced computing 4a090
 4E091|Model weights of certain advanced closed-weight AI models|RS1,AT1|ai model weights frontier training compute
 4E992|Technology for computers not controlled by 4E001|AT1|commercial computer technology
 5A001|Telecommunications systems, equipment and components|NS1,RS1,AT1|radio transmitter telecom telecommunications wireless underwater cable jamming lawful intercept ip network surveillance
@@ -692,7 +681,7 @@ const IDX_RAW = `
 7A004|Star trackers and their components|NS1,MT1,AT1|star tracker attitude azimuth
 7A005|Global navigation satellite system receiving equipment|NS1,MT1,AT1|gps gnss receiver anti jam military code decryption
 7A006|Airborne altimeters|NS1,MT1,AT1|radar altimeter airborne
-7A008|Underwater sonar navigation systems|NS1,AT1|doppler sonar navigation underwater correlation
+7A008|Underwater sonar navigation systems|NS2,AT1|doppler sonar navigation underwater correlation
 7A101|Accelerometers usable in rocket systems|MT1,AT1|accelerometer missile
 7A102|Gyros usable in rocket systems|MT1,AT1|gyro missile drift
 7A103|Instrumentation, navigation equipment and systems for missiles|MT1,AT1|missile guidance navigation integrated flight
@@ -702,7 +691,7 @@ const IDX_RAW = `
 7A115|Passive sensors for determining bearings|MT1,AT1|passive sensor bearing emitter
 7A116|Flight control systems and servo valves|MT1,AT1|flight control servo valve actuator missile
 7A117|Guidance sets|MT1,AT1|guidance set circular error probable
-7A611|Military avionics (600 series)|NS1,RS1,AT1,UN|military avionics 600 series
+7A611|Military fire control, laser, imaging and guidance equipment (600 series)|NS1,RS1,AT1,UN|military fire control laser imaging guidance sight targeting 600 series
 7A994|Other navigation, direction-finding and airborne equipment|AT1|navigation commercial avionics compass
 7B001|Test, calibration and alignment equipment for Category 7 items|NS1,AT1|inertial test equipment calibration
 7B003|Equipment for the production of Category 7 items|NS1,AT1|gyro production equipment
@@ -823,6 +812,14 @@ IDX_RAW.trim().split("\n").forEach(line=>{
   e.url = "https://www.ecfr.gov/search?search%5Bquery%5D=" + encodeURIComponent(e.n) + "&search%5Bhierarchy%5D%5Btitle%5D=15";
   IDX.push(e);
 });
+/* Boot-time sanity check on the index: warn (don't fail) on dropped or duplicate rows. */
+(function(){
+  const raw = IDX_RAW.trim().split("\n").filter(Boolean);
+  if(raw.length !== IDX.length) console.warn("[ECCN index] "+(raw.length-IDX.length)+" row(s) skipped as malformed (need 4 pipe-separated fields).");
+  const seen={}, dups=[];
+  IDX.forEach(en=>{ if(seen[en.n]) dups.push(en.n); seen[en.n]=1; });
+  if(dups.length) console.warn("[ECCN index] duplicate ECCN number(s): "+dups.join(", "));
+})();
 
 /* Entries whose control text turns on "specially designed" or that are
    otherwise worth a second look. Drives the prompt in step 5. */
@@ -843,24 +840,28 @@ const hl=(text,q)=>{
 let mode = "guide";
 let g;               /* guided-wizard state */
 let gstep = 0;
-let sQ="", sCat=null, sGrp=null;
-let sdCatch={a1:null,a2:null}, sdRelease={}, sdStep=0;
-let REG = [];         /* saved classification register (session only) */
+let sQ="", sCat=null;
+let sdCatch={a1:null,a2:null}, sdRelease={};
+let REG = loadReg();  /* saved classification register (persisted to localStorage when available) */
+
+/* Register persistence — survives refresh/close; degrades to in-memory if
+   localStorage is unavailable (private mode, sandboxed iframe). */
+function loadReg(){ try{ const s=localStorage.getItem("eccnRegister"); return s?JSON.parse(s):[]; }catch(e){ return []; } }
+function saveReg(){ try{ localStorage.setItem("eccnRegister", JSON.stringify(REG)); }catch(e){} }
 
 function freshG(){
   return {
-    itemDesc:"", usml:null, dsList:null,
-    cat:null, grp:null,
-    six:null, x515:null,
+    itemDesc:"", usml:null,
+    cat:null, itype:null, grp:null,
+    six:null,
     picked:null,          /* chosen ECCN entry */
-    sdNeeded:null, sdResult:null,
+    sdNeeded:null,
     result:null           /* 'ear99' | 'eccn' | 'itar' */
   };
 }
 
 /* ---------------- ECCN slots (the signature builder) ---------------- */
 function renderSlots(){
-  const labels = ["CAT","GRP","","","",""];
   const eccn = (mode==="guide" && g && g.picked) ? g.picked.n :
                (mode==="guide" && g && g.result==="ear99") ? "EAR99" : null;
   let chars = eccn ? eccn.split("") : [g&&g.cat!=null?String(g.cat):"", g&&g.grp?g.grp:"","","",""];
@@ -904,8 +905,8 @@ function tile(field,val,items,cols){
   cols = cols||2;
   return '<div class="tiles tiles--'+cols+'">' + items.map(o=>{
     const on = val===o.v;
-    return '<button class="tile '+(on?"on "+(o.m?"tile--"+o.m:""):"")+(o.sug?" tile--sug":"")+'" data-gset="'+field+'" data-gval="'+o.v+'">'+
-      (o.k!=null?'<span class="tile__k">'+o.k+'</span>':'')+
+    return '<button class="tile '+(on?"on "+(o.m?"tile--"+o.m:""):"")+'" aria-pressed="'+(on?"true":"false")+'" data-gset="'+field+'" data-gval="'+o.v+'">'+
+      (o.k!=null?'<span class="tile__k" aria-hidden="true">'+o.k+'</span>':'')+
       '<span><span class="tile__t">'+o.t+'</span>'+
       (o.d?'<span class="tile__d">'+o.d+'</span>':'')+
       (o.eg?'<span class="tile__eg">e.g. '+o.eg+'</span>':'')+
@@ -939,13 +940,12 @@ function viewG(){
     if(g.usml==="unsure"){
       out += '<div class="note note--warn"><h4>Check before proceeding</h4><p>The USML (22 CFR 121) has 21 categories covering weapons, ordnance, vessels, aircraft, spacecraft, electronics, and more. If, after checking, the item is not described there, come back and select &ldquo;No.&rdquo; If it is, select &ldquo;Yes&rdquo; and stop.</p></div>';
     }
-    out += nav(0,2,g.usml==="yes"?"See result":"Continue",g.usml==null) + '</div>';
+    out += nav(0,2,g.usml==="yes"?"See result":"Continue",g.usml==null||g.usml==="unsure") + '</div>';
     return out;
   }
 
   /* ---- 2: category ---- */
   if(gstep===2){
-    const q = (g.itemDesc||"").toLowerCase();
     out += '<h1 class="q">Which CCL category?</h1>'+
     '<p class="why">The CCL is divided into ten categories by general subject matter. Pick the one that best matches the item\u2019s general characteristics — you will narrow further from here.</p>'+
     '<div class="src">Supp. 4 to Pt. 774, Step 1 &middot; &sect;738.2(a)</div>'+
@@ -966,8 +966,8 @@ function viewG(){
     out += '<h1 class="q">What kind of item is it, within Category '+g.cat+'?</h1>'+
     '<p class="why">Each category has the same five product groups. This tells you which letter follows the category number.</p>'+
     '<div class="src">Supp. 4 to Pt. 774, Step 2 &middot; &sect;772.1 definitions of "part," "component," "end item," "material"</div>'+
-    tile("grp",g.grp, ITYPES.map(i=>({v:i.grp,t:i.t,d:i.d,eg:i.eg,k:i.grp})),1)+
-    nav(2,4,"Continue",!g.grp)+'</div>';
+    tile("itype",g.itype, ITYPES.map(i=>({v:i.k,t:i.t,d:i.d,eg:i.eg,k:i.grp})),1)+
+    nav(2,4,"Continue",!g.itype)+'</div>';
     return out;
   }
 
@@ -986,7 +986,7 @@ function viewG(){
         {v:"yes",t:"Yes — classify there and stop",d:"Search the "+String(g.cat)+"-series entries directly (they carry a 6 or are 9x515).",k:"⨯",m:"warn"}
       ],1)+'</div>';
 
-    out += nav(3,5,"Continue",!g.six)+'</div>';
+    out += nav(3,5,g.six==="yes"?"See result":"Continue",!g.six)+'</div>';
     return out;
   }
 
@@ -1016,7 +1016,7 @@ function viewG(){
     const qraw = sQ.trim().toLowerCase(); const qv = normQ(qraw); const q = qraw;
     let cands = IDX.filter(e=>e.cat===g.cat && e.grp===g.grp);
     if(q) cands = cands.filter(e=>matchesQ(e.q, qv));
-    out += '<div class="search"><input type="text" id="gq" value="'+esc(sQ)+'" placeholder="Filter within Category '+g.cat+g.grp+' — keyword, e.g. laser, valve, bearing…"><button class="btn btn--g btn--s" id="gqclear">Clear</button></div>';
+    out += '<div class="search"><input type="text" id="gq" aria-label="Filter entries within the selected category and product group" value="'+esc(sQ)+'" placeholder="Filter within Category '+g.cat+g.grp+' — keyword, e.g. laser, valve, bearing…"><button class="btn btn--g btn--s" id="gqclear">Clear</button></div>';
     out += '<div class="hits">' + (cands.length ? cands.map(e=>{
       const on = g.picked && g.picked.n===e.n;
       return '<button class="hit '+(on?"on":"")+'" data-pick="'+e.n+'"><span class="hit__1"><span class="hit__n">'+hl(e.n,q)+'</span>'+
@@ -1087,6 +1087,70 @@ function viewResult(){
   return out;
 }
 
+/* ---------------- Self-contained .xlsx writer (no dependencies) -----
+   An .xlsx is a ZIP of XML. This builds a valid single-sheet workbook
+   (inline strings, column widths, a merged title) packaged as a STORED
+   (uncompressed) zip. Verified against Excel / LibreOffice / openpyxl. */
+const _U8 = s => new TextEncoder().encode(s);
+const _CRC = (()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+function _crc32(b){let c=0xFFFFFFFF;for(let i=0;i<b.length;i++)c=_CRC[(c^b[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+function _col(n){let s="";n++;while(n){n--;s=String.fromCharCode(65+(n%26))+s;n=Math.floor(n/26);}return s;}
+function _xml(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"}[c]));}
+/* Guard spreadsheet formula/CSV injection: a leading = + - @ TAB CR is quoted. */
+function cellSafe(v){v=String(v==null?"":v);return /^[=+\-@\t\r]/.test(v)?"'"+v:v;}
+function _sheetXml(rows,cols,merges){
+  let body="";
+  rows.forEach((r,ri)=>{ body+='<row r="'+(ri+1)+'">';
+    r.forEach((val,ci)=>{ const txt=cellSafe(val); if(txt==="")return;
+      body+='<c r="'+_col(ci)+(ri+1)+'" t="inlineStr"><is><t xml:space="preserve">'+_xml(txt)+'</t></is></c>'; });
+    body+='</row>'; });
+  let colsX=""; if(cols&&cols.length){colsX='<cols>';cols.forEach((c,i)=>{colsX+='<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+(c.wch||10)+'" customWidth="1"/>';});colsX+='</cols>';}
+  let mrgX=""; if(merges&&merges.length){mrgX='<mergeCells count="'+merges.length+'">';merges.forEach(m=>{mrgX+='<mergeCell ref="'+m+'"/>';});mrgX+='</mergeCells>';}
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+colsX+'<sheetData>'+body+'</sheetData>'+mrgX+'</worksheet>';
+}
+function _zip(files){
+  const parts=[],central=[];let off=0;
+  const p=(a,b)=>{for(let i=0;i<b.length;i++)a.push(b[i]);};
+  const u16=n=>[n&255,(n>>8)&255], u32=n=>[n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255];
+  files.forEach(f=>{ const nm=_U8(f.name),d=f.data,crc=_crc32(d),L=d.length;
+    const lh=[]; p(lh,u32(0x04034b50));p(lh,u16(20));p(lh,u16(0x0800));p(lh,u16(0));p(lh,u16(0));p(lh,u16(0));
+    p(lh,u32(crc));p(lh,u32(L));p(lh,u32(L));p(lh,u16(nm.length));p(lh,u16(0));p(lh,nm);p(lh,d);
+    const ch=[]; p(ch,u32(0x02014b50));p(ch,u16(20));p(ch,u16(20));p(ch,u16(0x0800));p(ch,u16(0));p(ch,u16(0));p(ch,u16(0));
+    p(ch,u32(crc));p(ch,u32(L));p(ch,u32(L));p(ch,u16(nm.length));p(ch,u16(0));p(ch,u16(0));p(ch,u16(0));p(ch,u16(0));p(ch,u32(0));p(ch,u32(off));p(ch,nm);
+    parts.push(lh);central.push(ch);off+=lh.length; });
+  const cdStart=off;let cdLen=0;central.forEach(c=>cdLen+=c.length);
+  const eo=[]; p(eo,u32(0x06054b50));p(eo,u16(0));p(eo,u16(0));p(eo,u16(files.length));p(eo,u16(files.length));p(eo,u32(cdLen));p(eo,u32(cdStart));p(eo,u16(0));
+  let total=0;parts.forEach(x=>total+=x.length);central.forEach(x=>total+=x.length);total+=eo.length;
+  const out=new Uint8Array(total);let o=0;
+  parts.forEach(x=>{out.set(x,o);o+=x.length;});central.forEach(x=>{out.set(x,o);o+=x.length;});out.set(eo,o);
+  return out;
+}
+function buildXlsx(rows,opts){ opts=opts||{};
+  const sheet=_sheetXml(rows,opts.cols,opts.merges), nm=opts.sheetName||"Sheet1";
+  const ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>';
+  const rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+  const wb='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="'+_xml(nm)+'" sheetId="1" r:id="rId1"/></sheets></workbook>';
+  const wbr='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>';
+  return _zip([
+    {name:"[Content_Types].xml",data:_U8(ct)},
+    {name:"_rels/.rels",data:_U8(rels)},
+    {name:"xl/workbook.xml",data:_U8(wb)},
+    {name:"xl/_rels/workbook.xml.rels",data:_U8(wbr)},
+    {name:"xl/worksheets/sheet1.xml",data:_U8(sheet)}
+  ]);
+}
+/* Trigger a browser download of raw bytes (used for both .xlsx and .json). */
+function saveBlob(bytes,fname,mime){
+  try{
+    const blob=new Blob([bytes],{type:mime||"application/octet-stream"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=url; a.download=fname;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+    return true;
+  }catch(err){ alert("Download failed: "+(err&&err.message?err.message:err)); return false; }
+}
+
 /* ---------------- Excel export of the classification result --------- */
 function slug(s){ return String(s||"").replace(/[^a-z0-9]+/gi,"-").replace(/^-+|-+$/g,""); }
 function fmtDate(d){
@@ -1094,10 +1158,6 @@ function fmtDate(d){
   return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes());
 }
 function downloadResultXLSX(btn){
-  if(typeof XLSX==="undefined"){
-    alert("The Excel export library did not load — check your internet connection and try again.");
-    return;
-  }
   const isEar99 = !g.picked;
   const now = new Date();
   const rows = [
@@ -1125,16 +1185,10 @@ function downloadResultXLSX(btn){
     ["Disclaimer", "This is decision support, not a BIS ruling, not legal advice, and not a substitute for a CCATS (SNAP-R) where the item sits at the edge of two entries."]
   ];
 
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws["!cols"] = [{wch:26},{wch:80}];
-  ws["!merges"] = [{s:{r:0,c:0},e:{r:0,c:1}}];
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Classification");
-
+  const bytes = buildXlsx(rows, {cols:[{wch:26},{wch:80}], merges:["A1:B1"], sheetName:"Classification"});
   const code = isEar99 ? "EAR99" : g.picked.n;
   const fname = "ECCN-" + code + (g.itemDesc ? "-" + slug(g.itemDesc).slice(0,40) : "") + ".xlsx";
-  XLSX.writeFile(wb, fname);
+  saveBlob(bytes, fname, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
   if(btn){ const orig=btn.textContent; btn.textContent="Downloaded"; setTimeout(()=>{btn.textContent=orig;},1600); }
 }
@@ -1146,7 +1200,7 @@ function viewSearch(){
     '<h1 class="q">Find an entry directly</h1>'+
     '<p class="why">For when you already have a rough idea what you\u2019re looking for. Search across all ten categories, or narrow to one first.</p>'+
     '<div class="src">Index of Supp. 1 to Pt. 774 — confirm every result against the live text before relying on it.</div>'+
-    '<div class="search"><input type="text" id="sq" value="'+esc(sQ)+'" placeholder="Keyword, ECCN number, or plain description — laser, encryption, machine tool, gpu, valve, drone…"><button class="btn btn--g btn--s" id="sqclear">Clear</button></div>'+
+    '<div class="search"><input type="text" id="sq" aria-label="Search the Commerce Control List by keyword or ECCN number" value="'+esc(sQ)+'" placeholder="Keyword, ECCN number, or plain description — laser, encryption, machine tool, gpu, valve, drone…"><button class="btn btn--g btn--s" id="sqclear">Clear</button></div>'+
     '<div class="filters">' + [0,1,2,3,4,5,6,7,8,9].map(i=>
       '<button class="chip '+(sCat===i?"on":"")+'" data-scat="'+i+'">Cat '+i+'</button>').join("") +
       '<button class="chip '+(sCat==null?"on":"")+'" data-scat="all">All categories</button></div>';
@@ -1242,7 +1296,7 @@ function viewReg(){
   let out = '<div class="card">'+
     '<div class="step-n">Session register</div>'+
     '<h1 class="q">Saved classifications</h1>'+
-    '<p class="why">Kept for this session only — nothing is sent anywhere. Export as JSON before you close the tab if you want to keep it, or print each record for the compliance file.</p>';
+    '<p class="why">Stored in this browser only (local storage) and never transmitted. Download the register as JSON for your compliance file, or print each record. Clearing your browser data removes it.</p>';
   if(!REG.length){
     out += '<div class="empty" style="border:1.5px solid var(--line);background:#fff">Nothing saved yet. Classify an item in Guided mode, or pick one in Search mode, then choose &ldquo;Save to register.&rdquo;</div>';
   } else {
@@ -1251,7 +1305,7 @@ function viewReg(){
       '<span>'+esc(r.desc||r.title||"—")+'<br><span style="color:var(--ink3);font-size:12px">'+new Date(r.when).toLocaleString()+'</span></span>'+
       '<button class="link" data-regdel="'+i+'">Remove</button></div>'
     ).join("") + '</div>';
-    out += '<div class="row"><button class="btn btn--g" id="regExport">Export register as JSON</button><button class="btn btn--g" id="regClear">Clear all</button></div>';
+    out += '<div class="row"><button class="btn btn--g" id="regExport">Download register (.json)</button><button class="btn btn--g" id="regClear">Clear all</button></div>';
   }
   out += '</div>';
   return out;
@@ -1263,10 +1317,16 @@ function render(){
   else if(mode==="search") $("#stage").innerHTML = viewSearch();
   else if(mode==="sd") $("#stage").innerHTML = viewSD();
   else if(mode==="reg") $("#stage").innerHTML = viewReg();
-  document.querySelectorAll(".mode").forEach(b=>b.classList.toggle("on", b.dataset.mode===mode));
+  document.querySelectorAll(".mode").forEach(b=>{ const on=b.dataset.mode===mode; b.classList.toggle("on", on); b.setAttribute("aria-selected", on?"true":"false"); });
   renderSlots();
   const q = $("#gq")||$("#sq");
-  if(q){ const p=q.value.length; q.focus(); q.setSelectionRange(p,p); }
+  if(q){ const p=q.value.length; q.focus({preventScroll:true}); q.setSelectionRange(p,p); }
+}
+
+/* Respect prefers-reduced-motion for the scroll-to-top on navigation. */
+function smoothTop(){
+  const rm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({top:0, behavior: rm ? "auto" : "smooth"});
 }
 
 document.addEventListener("click", e=>{
@@ -1278,12 +1338,14 @@ document.addEventListener("click", e=>{
 
   if(t.dataset.gset){
     const f=t.dataset.gset; let v=t.dataset.gval;
+    if(f.startsWith("sdc_")||f.startsWith("sdr_")) return; /* handled by the specially-designed listener below */
     if(f==="cat") v = +v;   /* IDX category codes are numbers, not strings */
-    if(f==="notfound"){ g.picked=null; gstep=7; render(); window.scrollTo({top:0,behavior:"smooth"}); return; }
+    if(f==="notfound"){ g.picked=null; g.result="ear99"; gstep=7; render(); smoothTop(); return; }
     g[f] = g[f]===v ? null : v;
-    if(f==="cat"){ g.grp=null; g.picked=null; sQ=""; }
-    if(f==="grp"){ g.picked=null; sQ=""; }
-    if(f==="usml" && v==="yes"){ g.result="itar"; }
+    if(f==="cat"){ g.grp=null; g.itype=null; g.picked=null; g.result=null; sQ=""; }
+    if(f==="itype"){ g.grp = g.itype ? (ITYPES.find(i=>i.k===g.itype)||{}).grp : null; g.picked=null; g.result=null; sQ=""; }
+    if(f==="grp"){ g.picked=null; g.result=null; sQ=""; }
+    if(f==="usml"){ g.result = g.usml==="yes" ? "itar" : null; }
     render(); return;
   }
   if(t.dataset.gnext!=null){
@@ -1297,13 +1359,26 @@ document.addEventListener("click", e=>{
       renderSlots();
       return;
     }
-    gstep = +t.dataset.gnext; render(); window.scrollTo({top:0,behavior:"smooth"}); return;
+    if(gstep===4 && g.six==="yes"){
+      /* 600-series / 9x515 describes the item: it trumps other ECCNs — stop here */
+      $("#stage").innerHTML = '<div class="card"><div class="res res--eccn"><div class="res__hd"><div class="res__k">Result</div>'+
+        '<div class="res__big" style="font-size:32px">600-series / 9x515</div>'+
+        '<div class="res__t">A munitions-derived entry describes this item, so it is classified in the Category '+esc(String(g.cat))+' 600-series (or 9x515) paragraph, and that entry trumps every other ECCN.</div></div>'+
+        '<div class="res__b"><p>Identify the exact entry in Category '+esc(String(g.cat))+' carrying a 6 in the third position (or a 9x515 entry) and confirm it against the live CCL. This index does not enumerate every 600-series paragraph.</p>'+
+        '<p><a href="https://www.bis.gov/regulations/ear/interactive-commerce-control-list" target="_blank" rel="noopener">BIS Interactive CCL &rarr;</a></p></div></div>'+
+        '<div class="row"><button class="btn btn--g" data-gback="4">Back</button><button class="btn btn--g" id="gNew">Start over</button></div></div>';
+      renderSlots();
+      return;
+    }
+    gstep = +t.dataset.gnext; render(); smoothTop(); return;
   }
-  if(t.dataset.gback!=null){ gstep = +t.dataset.gback; render(); window.scrollTo({top:0,behavior:"smooth"}); return; }
+  if(t.dataset.gback!=null){ gstep = +t.dataset.gback; render(); smoothTop(); return; }
 
   if(t.dataset.pick){
     const e = IDX.find(x=>x.n===t.dataset.pick);
+    if(!e) return;
     g.picked = g.picked && g.picked.n===e.n ? null : e;
+    g.result = g.picked ? "eccn" : null;
     render(); return;
   }
   if(t.dataset.scat!=null){ sCat = t.dataset.scat==="all"?null:+t.dataset.scat; render(); return; }
@@ -1319,21 +1394,22 @@ document.addEventListener("click", e=>{
       const e = IDX.find(x=>x.n===sPicked);
       rec = {code:e.n, title:e.t, desc:"", when:Date.now()};
     }
-    REG.unshift(rec);
+    REG.unshift(rec); saveReg();
     t.textContent = "Saved";
-    setTimeout(()=>{ t.textContent = t.id==="gSave"?"Save to register":"Save to register"; },1600);
+    setTimeout(()=>{ t.textContent = "Save to register"; },1600);
     return;
   }
   if(t.id==="gDownload"){ downloadResultXLSX(t); return; }
   if(t.id==="gNew"){ g=freshG(); gstep=0; sQ=""; mode="guide"; render(); window.scrollTo({top:0}); return; }
   if(t.id==="sdReset"){ sdCatch={a1:null,a2:null}; sdRelease={}; render(); return; }
-  if(t.dataset.regdel!=null){ REG.splice(+t.dataset.regdel,1); render(); return; }
+  if(t.dataset.regdel!=null){ REG.splice(+t.dataset.regdel,1); saveReg(); render(); return; }
   if(t.id==="regExport"){
-    const blob = JSON.stringify(REG,null,2);
-    navigator.clipboard.writeText(blob).then(()=>{t.textContent="Copied to clipboard";setTimeout(()=>t.textContent="Export register as JSON",1800);});
+    const json = JSON.stringify(REG,null,2);
+    const ok = saveBlob(_U8(json), "ECCN-register-"+fmtDate(new Date()).replace(/[^0-9]/g,"")+".json", "application/json");
+    if(ok){ t.textContent="Downloaded .json"; setTimeout(()=>t.textContent="Download register (.json)",1800); }
     return;
   }
-  if(t.id==="regClear"){ if(confirm("Clear the whole register?")){ REG=[]; render(); } return; }
+  if(t.id==="regClear"){ if(confirm("Clear the whole register?")){ REG=[]; saveReg(); render(); } return; }
 
   /* specially-designed tiles use data-gset too, but scoped keys sdc_/sdr_ */
 });
