@@ -32,12 +32,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure Pages
-        # enablement: true asks GitHub to turn Pages on (source = Actions) if
-        # it isn't already, so no manual repo-settings step is needed — as long
-        # as Actions is allowed to enable it for this repo.
+        # Reads the repo's Pages config. Pages must already be enabled with
+        # source = "GitHub Actions" (Settings → Pages) — the Actions token is
+        # not permitted to enable Pages itself, so that is a one-time manual step.
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Assemble site
         # Serve navigator.html at the site root (index.html) and also keep it

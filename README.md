@@ -17,11 +17,13 @@ including the `.xlsx` export — runs in the browser from one HTML file.
 ## Hosting
 
 Hosted on **GitHub Pages** via `.github/workflows/pages.yml`, which publishes
-`navigator.html` as the site root (`index.html`) on every push to `main`.
+`navigator.html` as the site root (`index.html`) on every push to `main` (and
+the working branch).
 
-If the workflow cannot self-enable Pages (org/repo policy), enable it once under
-repository **Settings → Pages → Build and deployment → Source: GitHub Actions**,
-then re-run the workflow.
+**One-time setup (repo admin):** repository **Settings → Pages → Build and
+deployment → Source: GitHub Actions**. The GitHub Actions token is not permitted
+to enable Pages by itself, so this switch must be flipped once; after that,
+every push deploys automatically.
 
 ## Local use
 
