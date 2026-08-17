@@ -158,4 +158,15 @@ Severity key for rows: **dead** = ECCN no longer exists on the CCL; **ITAR-stub*
 
 ---
 
+## Remediation record (applied 2026-08-17, this branch)
+
+All four remediation tracks were approved and applied to `navigator.html` in the commit accompanying this file:
+
+1. **Index rebuilt from source.** Every row's reason-for-control codes were re-derived programmatically from the 2026-08-12 eCFR text of Supp. No. 1 to Part 774 (extraction script validated against the audit findings before use). The index grew from ~355 to 440 rows: 85 missing entries added (including the Sept 2024 quantum/AM/GAAFET, Dec 2024 SME, Jan 2025 biotech ECCNs, the SL-controlled 5x980 family, and 7E001–7E003), 12 NRC-jurisdiction rows and 6 removed-entry rows converted to flagged redirects, and ~26 ITAR/pointer stubs converted to explicit "subject to the ITAR"/cross-reference flags rendered as jurisdiction warnings, not EAR results. Swapped/wrong headings (8A609/8A620, 1C990, 9A120, 2E301, 2B008, 3D003, 7A005 and others) corrected. New non-chart code vocabulary added (SL, RS0/CC0/AT0/NS0/NP0/MT0/CB0, RUS, ITAR/NRC/DOE/REF/GONE).
+2. **§772.1 tool now enforces the (b) chapeau.** A Part 0 item-type question gates the releases; end items/equipment/systems/materials caught by (a) conclude "specially designed — no release path." (a)(1) gained the USML branch; (b)(3)/(b)(4) hints carry the "another AT-only ECCN or EAR99 item" restriction; conclusions no longer overstate ("falls within the paragraph" → "must also meet the paragraph's other requirements"; released items are directed back into the Order of Review).
+3. **Wizard restructured to Supp. No. 4.** Now nine steps: a §734.3 scope screen joined the USML gate (with CJ/DS-4076 guidance on "unsure"); the 600-series/9x515 check split into enumerated (Step 3) and .x catch-alls routed through the §772.1 test (Step 4), both scoped across all categories; EAR99 requires an explicit full-CCL attestation before the result renders. The ITAR stop page now covers manufacturer registration (§122.1(a)), the see-through rule (§120.11(c)), and paragraph (x) (§120.5(b)(2)); the xlsx records the USML answer as a dated exporter self-determination with no CJ obtained.
+4. **Definitional text corrected.** GSN rewritten as the License Exception TSU note (81 FR 64691); GTN carve-outs re-attributed to Part 734; product group A retitled; "use"/end-item definitions completed; 4E091 note updated to codified-but-unenforced; 3E001/4E001/3A090/4A090 notes rescoped; firearms rows carry a Nov 20, 2026 suppressors-IFR caveat; RULEDATE moved to the verified baseline (12 Aug 2026).
+
+Verified by a scripted Chromium walkthrough (all nine steps, ECCN result, EAR99 attestation flow, ITAR-stub rendering, SD chapeau gating) with zero console errors.
+
 *Decision-support audit; not legal advice. Every finding cites the eCFR text as of 2026-08-12/13 or a dated Federal Register rule; confirm against the live CCL before edits ship.*

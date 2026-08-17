@@ -14,6 +14,14 @@ including the `.xlsx` export — runs in the browser from one HTML file.
 > a curated, dated navigational aid; confirm every result against the live CCL
 > before relying on it. Volatile entries carry an in-tool caveat note.
 
+**Accuracy baseline:** the workflow and every index row were audited against the
+eCFR text of the EAR (15 CFR 730–774) and ITAR (22 CFR 120–130) current as of
+**12 Aug 2026**, and the index's reason-for-control codes were re-derived
+programmatically from that text — see [`AUDIT.md`](AUDIT.md) for the findings
+and method. ITAR/NRC cross-reference stubs are flagged as jurisdiction
+redirects, not EAR results. The firearms/suppressors IFR (91 FR 46252) takes
+effect 20 Nov 2026 and will require a refresh.
+
 ## Hosting
 
 Hosted on **GitHub Pages** via `.github/workflows/pages.yml`, which publishes
