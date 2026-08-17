@@ -1,0 +1,58 @@
+name: Deploy ECCN navigator to GitHub Pages
+
+# Publishes the self-contained navigator.html to GitHub Pages.
+# Runs on pushes to main (the long-term source) and to the current working
+# branch (so the site can go live before the PR is merged), plus manually.
+on:
+  push:
+    branches:
+      - main
+      - claude/file-security-review-e6g8ti
+  workflow_dispatch:
+
+# Least-privilege token scopes needed to configure + deploy Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never run two Pages deploys at once; let an in-flight deploy finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Pages
+        # enablement: true asks GitHub to turn Pages on (source = Actions) if
+        # it isn't already, so no manual repo-settings step is needed — as long
+        # as Actions is allowed to enable it for this repo.
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Assemble site
+        # Serve navigator.html at the site root (index.html) and also keep it
+        # reachable at /navigator.html. Single source of truth: navigator.html.
+        run: |
+          mkdir -p _site
+          cp navigator.html _site/index.html
+          cp navigator.html _site/navigator.html
+          touch _site/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
