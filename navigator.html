@@ -404,7 +404,7 @@ const RFC = {
    number, heading, reasons for control, and search terms. It is an index,
    not a reproduction — the controlling technical parameters live in the
    CCL text itself and every entry here links out to it.
-   Format:  number | heading | reasons | search terms
+   Format:  number | heading | reasons | search terms | optional caveat note
    ===================================================================== */
 
 const IDX_RAW = `
@@ -793,6 +793,23 @@ function matchesQ(entryQ, variants){
     return words.length && words.every(w=>entryQ.includes(w));
   });
 }
+/* Volatile per-entry caveats, surfaced in the UI and the .xlsx export. Kept
+   here (not inside the IDX_RAW blob) because they change often and benefit
+   from a single place to review. An optional 5th "|note" field on a row
+   overrides the entry here. */
+const ZDOTNOTE = "A “.z” paragraph (added Oct 2023) may apply if the item also meets 3A090/4A090 performance thresholds, layering on Regional Stability advanced-computing controls — check the .z variant on the live CCL.";
+const NOTES = {
+  "3A090":"Advanced-computing IC control (Oct 2022, tightened repeatedly since). Thresholds and licence-exception treatment change frequently — verify current parameters.",
+  "4A090":ZDOTNOTE,
+  "4D090":"Advanced-computing software tied to 3A090/4A090 thresholds — verify current parameters and any applicable .z software.",
+  "4E091":"Created by the Jan 2025 “AI Diffusion” rule; BIS announced non-enforcement/rescission in May 2025 and the status has since been contested. Confirm whether this control is currently in force before relying on it.",
+  "3B001":"Now also covers advanced semiconductor-manufacturing equipment formerly in ECCN 3B090 (removed Oct 2023).",
+  "3B002":"Now also covers semiconductor test equipment formerly associated with ECCN 3B090 (removed Oct 2023).",
+  "3E001":"Regional Stability applies specifically to “technology” for 3A090.a items (§742.6) — sub-paragraph-specific, not the whole entry.",
+  "4E001":"Regional Stability applies specifically to “technology” for 4A090.a items and 4D090 software (§742.6) — sub-paragraph-specific.",
+  "3A001":ZDOTNOTE, "4A003":ZDOTNOTE, "4A004":ZDOTNOTE, "4A005":ZDOTNOTE,
+  "5A002":ZDOTNOTE, "5A004":ZDOTNOTE, "5A992":ZDOTNOTE, "5D002":ZDOTNOTE, "5D992":ZDOTNOTE
+};
 IDX_RAW.trim().split("\n").forEach(line=>{
   const p = line.split("|");
   if(p.length < 4) return;
@@ -802,6 +819,7 @@ IDX_RAW.trim().split("\n").forEach(line=>{
     t:p[1].trim(),
     c:p[2].split(",").map(s=>s.trim()).filter(Boolean),
     k:p[3].trim(),
+    note:(p[4]||"").trim() || NOTES[n] || "",
     cat:parseInt(n[0],10),
     grp:n[1],
     six:/^\d[A-E]6\d\d$/.test(n),
@@ -1030,6 +1048,7 @@ function viewG(){
       const e = g.picked;
       out += '<div class="note note--ok"><h4>'+e.n+' — '+esc(e.t)+'</h4>'+
         '<p>Reasons for control on this entry: '+e.c.map(c=>'<span class="pill pill--c">'+(RFC[c]||c)+'</span>').join(" ")+'</p>'+
+        (e.note?'<p><b>⚠ Caveat:</b> '+esc(e.note)+'</p>':'')+
         (e.six?'<p><b>600-series entry.</b> '+SERIES.six.note+'</p>':'')+
         (e.x515?'<p><b>9x515 entry.</b> '+SERIES.x515.note+'</p>':'')+
         '<p style="margin-top:8px"><a href="'+e.url+'" target="_blank" rel="noopener">Open the full entry on eCFR &rarr;</a> — confirm every paragraph, note and decontrol before relying on this.</p></div>';
@@ -1075,6 +1094,7 @@ function viewResult(){
         '<tr><th>Specially designed</th><td>'+(g.sdNeeded==="yes"?"Reviewed under §772.1(a)/(b) — see the Specially Designed tool for the working":"Not a control parameter on this entry")+'</td></tr>'+
         '<tr><th>Source</th><td><a href="'+e.url+'" target="_blank" rel="noopener">'+e.url+'</a></td></tr>'+
       '</table>'+
+      (e.note?'<div class="note note--warn"><h4>Caveat on this entry</h4><p>'+esc(e.note)+'</p></div>':'')+
       '<div class="note"><b>This is a classification, not a licence determination.</b> The reasons for control above feed into the Commerce Country Chart (Supp. 1 to Pt. 738) together with your destination to tell you whether a licence is required. That is a separate exercise from classification itself.</div>'+
       '</div></div>';
   }
@@ -1175,6 +1195,7 @@ function downloadResultXLSX(btn){
     [],
     ["RESULT", isEar99 ? "EAR99" : g.picked.n],
     ["Entry heading", isEar99 ? "No entry on the Commerce Control List describes this item" : g.picked.t],
+    ...(!isEar99 && g.picked.note ? [["Entry caveat", g.picked.note]] : []),
     ["Reasons for control", isEar99 ? "n/a — EAR99" : g.picked.c.map(c=>RFC[c]||c).join("; ")],
     ["Series", isEar99 ? "n/a" : (g.picked.six ? "600 series — trumps other ECCNs" : g.picked.x515 ? "9x515 spacecraft — trumps other ECCNs" : "Standard entry")],
     ["Source reference", isEar99 ? "" : g.picked.url],
@@ -1222,6 +1243,7 @@ function viewSearch(){
     if(e){
       out += '<div class="note note--ok"><h4>'+e.n+' — '+esc(e.t)+'</h4>'+
         '<p>Reasons for control: '+e.c.map(c=>'<span class="pill pill--c">'+(RFC[c]||c)+'</span>').join(" ")+'</p>'+
+        (e.note?'<p><b>⚠ Caveat:</b> '+esc(e.note)+'</p>':'')+
         (e.six?'<p><b>600-series entry</b> — trumps other ECCNs.</p>':'')+
         (e.x515?'<p><b>9x515 spacecraft entry</b> — trumps other ECCNs.</p>':'')+
         (SD_FLAG.test(e.n)?'<p><b>Likely uses \u201cspecially designed.\u201d</b> Switch to that tool if the item is a part, component, accessory or attachment.</p>':'')+
